@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>adminProfile</title>
+    <title>admFlights</title>
 </head>
 <body>
-<h1>ADMIN'S PROFILE</h1>
+<h1>FLIGHTS</h1>
 <a href="/admins">администраторы</a>
 <a href="/flights">рейсы</a>
 </body>

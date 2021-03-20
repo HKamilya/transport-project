@@ -22,4 +22,9 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
         flightEntity.setId(null);
         flightRepository.save(flightEntity);
     }
+
+    @Override
+    public void delete(Long id) {
+        flightRepository.deleteById(id);
+    }
 }

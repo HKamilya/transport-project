@@ -4,11 +4,11 @@
 <html lang="en">
 
 <head>
-    <title>signIn</title>
+    <title>admSignIn</title>
 </head>
 
 <body>
-<form method="post" action="/signIn">
+<form method="post" action="/admin">
     <input type="text" name="username" placeholder="username">
     <input type="password" name="password" placeholder="password">
     <label>

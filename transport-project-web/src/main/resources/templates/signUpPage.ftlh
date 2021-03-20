@@ -7,7 +7,6 @@
     <title>Register Form</title>
 
 </head>
-
 <body>
 <form method="POST">
     <input name="username" type="text" placeholder="username">
@@ -17,8 +16,7 @@
     <input name="password" type="password" placeholder="password">
     <input name="phoneNumber" type="number" placeholder="phone">
     <input type="date" name="dateOfBirth" placeholder="date of birth">
-<button type="submit">Ок</button>
+    <button type="submit">Ок</button>
 </form>
-
 </body>
 </html>
