@@ -8,9 +8,11 @@ import ru.kpfu.itis.transportprojectapi.dto.FlightDto;
 import ru.kpfu.itis.transportprojectapi.dto.UserDto;
 import ru.kpfu.itis.transportprojectapi.service.AdminService;
 import ru.kpfu.itis.transportprojectapi.service.FlightService;
+import ru.kpfu.itis.transportprojectimpl.entity.FlightEntity;
 import ru.kpfu.itis.transportprojectimpl.entity.UserEntity;
 import ru.kpfu.itis.transportprojectimpl.repository.UserRepository;
 
+import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,13 +49,15 @@ public class AdminServiceImpl implements AdminService<UserDto, Long, FlightDto> 
 
     @Override
     public void addNewFlight(FlightDto flightDto) {
-        flightService.save(flightDto);
+        FlightEntity flightEntity = new FlightEntity();
+        modelMapper.map(flightDto, flightEntity);
+        flightEntity.setId(null);
+        flightService.save(flightEntity);
     }
 
     @Override
     public void deleteAdminOrUser(Long id) {
         userRepository.deleteById(id);
-
     }
 
     @Override

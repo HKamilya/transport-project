@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>ADMIN'S PROFILE</h1>
-<a href="/admins">администраторы</a>
-<a href="/flights">рейсы</a>
+<a href="/admin/admins">администраторы</a>
+<a href="/admin/flights">рейсы</a>
 </body>
 </html>

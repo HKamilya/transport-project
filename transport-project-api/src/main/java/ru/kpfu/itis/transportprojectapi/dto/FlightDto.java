@@ -1,8 +1,11 @@
 package ru.kpfu.itis.transportprojectapi.dto;
 
-import java.sql.Time;
-import java.util.Date;
+import lombok.Data;
 
+import java.sql.Time;
+import java.sql.Date;
+
+@Data
 public class FlightDto {
     private String countryTo;
     private String cityTo;
