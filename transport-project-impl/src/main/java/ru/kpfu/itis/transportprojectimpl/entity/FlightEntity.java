@@ -3,7 +3,8 @@ package ru.kpfu.itis.transportprojectimpl.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Time;
+
+import java.time.LocalTime;
 import java.util.Date;
 
 @Data
@@ -20,10 +21,12 @@ public class FlightEntity {
     private String cityFrom;
     private String airportFrom;
     private String planeType;
-    private Date date1;
-    private Time time1;
-    private Date date2;
-    private Time time2;
+    @Temporal(TemporalType.DATE)
+    private Date dateDep;
+    @Temporal(TemporalType.DATE)
+    private Date dateArr;
+    private LocalTime timeDep;
+    private LocalTime timeArr;
     private int countOfPlaces;
-
+    private float price;
 }

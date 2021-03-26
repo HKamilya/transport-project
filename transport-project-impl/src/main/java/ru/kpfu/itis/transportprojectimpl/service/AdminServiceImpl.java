@@ -12,7 +12,7 @@ import ru.kpfu.itis.transportprojectimpl.entity.FlightEntity;
 import ru.kpfu.itis.transportprojectimpl.entity.UserEntity;
 import ru.kpfu.itis.transportprojectimpl.repository.UserRepository;
 
-import javax.xml.crypto.Data;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,10 +49,7 @@ public class AdminServiceImpl implements AdminService<UserDto, Long, FlightDto> 
 
     @Override
     public void addNewFlight(FlightDto flightDto) {
-        FlightEntity flightEntity = new FlightEntity();
-        modelMapper.map(flightDto, flightEntity);
-        flightEntity.setId(null);
-        flightService.save(flightEntity);
+        flightService.save(flightDto);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class UserEntity {
     private Role role;
     @Enumerated(value = EnumType.STRING)
     private State state;
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
     public enum State {
