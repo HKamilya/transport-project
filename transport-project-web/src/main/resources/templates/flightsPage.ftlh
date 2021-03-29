@@ -4,6 +4,65 @@
     <meta charset="UTF-8">
     <title>flights</title>
     <link rel="stylesheet" href="/css/bootstrap.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(function () {
+            $('#button').on("click", function (event) {
+                event.preventDefault();
+                // private String countryTo;
+                // private String cityTo;
+                // private String airportTo;
+                // private String countryFrom;
+                // private String cityFrom;
+                // private String airportFrom;
+                // private String planeType;
+                // private String dateDep;
+                // private String dateArr;
+                // private String timeDep;
+                // private String timeArr;
+                // private int countOfPlaces;
+                // private float price;
+                var countryTo = $('#countryTo').val();
+                var cityTo = $('#cityTo').val();
+                var airportTo = $('#airportTo').val();
+                var countryFrom = $('#countryFrom').val();
+                var cityFrom = $("#cityFrom").val();
+                var airportFrom = $("#airportFrom").val();
+                var planeType = $("#planeType").val();
+                var dateDep = $("#dateDep").val();
+                var dateArr = $("#dateArr").val();
+                var timeDep = $("#timeDep").val();
+                var timeArr = $("#timeArr").val();
+                var countOfPlaces = $("#countOfPlaces").val();
+                var price = $("#price").val();
+                var data_json = {
+                    'countryTo': countryTo,
+                    'cityTo': cityTo,
+                    'airportTo': airportTo,
+                    'countryFrom': countryFrom,
+                    'cityFrom': cityFrom,
+                    'airportFrom': airportFrom,
+                    'planeType': planeType,
+                    'dateDep': dateDep,
+                    'dateArr': dateArr,
+                    'timeDep': timeDep,
+                    'timeArr': timeArr,
+                    'countOfPlaces': countOfPlaces,
+                    'price': price
+                }
+                console.log(JSON.stringify(data_json));
+                $.ajax({
+                    type: "POST",
+                    url: "/flights",
+                    data: JSON.stringify(data_json),
+                    contentType: "application/json; charset = utf-8",
+                    success: function (result) {
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -35,21 +94,21 @@
         <div class="col-3">
             <div class="card text-white bg-dark mb-3" style="max-width: 20em;">
                 <div class="card-body">
-                    <form method="post" action="/admin/addFlight">
-                        <input name="countryFrom" type="text" placeholder="departure country">
-                        <input name="cityFrom" type="text" placeholder="departure city">
-                        <input name="airportFrom" type="text" placeholder="departure airport">
-                        <input name="countryTo" type="text" placeholder="country of arrival">
-                        <input name="cityTo" type="text" placeholder="city of arrival">
-                        <input name="airportTo" type="text" placeholder="airport of arrival">
-                        <input name="planeType" type="text" placeholder="airplane type">
-                        <input name="dateDep" type="date" placeholder="departure date">
-                        <input name="timeDep" type="time" placeholder="departure time">
-                        <input name="dateArr" type="date" placeholder="date of arrival">
-                        <input name="timeArr" type="time" placeholder="time of arrival">
-                        <input name="countOfPlaces" type="number" placeholder="count of passengers">
-                        <input name="price" type="number" step="0.1" placeholder="price">
-                        <button type="submit">Ок</button>
+                    <form>
+                        <input id="countryFrom" name="countryFrom" type="text" placeholder="departure country">
+                        <input id="cityFrom" name="cityFrom" type="text" placeholder="departure city">
+                        <input id="airportFrom" name="airportFrom" type="text" placeholder="departure airport">
+                        <input id="countryTo" name="countryTo" type="text" placeholder="country of arrival">
+                        <input id="cityTo" name="cityTo" type="text" placeholder="city of arrival">
+                        <input id="airportTo" name="airportTo" type="text" placeholder="airport of arrival">
+                        <input id="planeType" name="planeType" type="text" placeholder="airplane type">
+                        <input id="dateDep" name="dateDep" type="date" placeholder="departure date">
+                        <input id="timeDep" name="timeDep" type="time" placeholder="departure time">
+                        <input id="dateArr" name="dateArr" type="date" placeholder="date of arrival">
+                        <input id="timeArr" name="timeArr" type="time" placeholder="time of arrival">
+                        <input id="countOfPlaces" name="countOfPlaces" type="number" placeholder="count of passengers">
+                        <input id="price" name="price" type="number" step="0.1" placeholder="price">
+                        <button type="button" id="button">Add</button>
                     </form>
                 </div>
             </div>

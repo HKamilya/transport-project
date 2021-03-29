@@ -1,13 +1,30 @@
 package ru.kpfu.itis.transportprojectweb.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import ru.kpfu.itis.transportprojectapi.dto.FlightDto;
+import ru.kpfu.itis.transportprojectapi.dto.SearchForm;
+import ru.kpfu.itis.transportprojectapi.service.FlightService;
+import ru.kpfu.itis.transportprojectimpl.entity.FlightEntity;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/search")
 public class SearchController {
+    @Autowired
+    private FlightService flightService;
 
-    @GetMapping("/search")
-    public String getSearchPage() {
-        return "searchPage.ftlh";
+
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity<List<FlightDto>> search(@RequestBody SearchForm searchForm) {
+        System.out.println(searchForm);
+        List<FlightDto> list = flightService.search(searchForm);
+        System.out.println(list);
+        return ResponseEntity.ok(list);
     }
 }

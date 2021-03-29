@@ -7,6 +7,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class FlightDto {
+    private Long id;
     private String countryTo;
     private String cityTo;
     private String airportTo;

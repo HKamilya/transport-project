@@ -53,10 +53,4 @@ public class AdminController {
         return "redirect:/admin/admins";
     }
 
-    @PostMapping("/admin/addFlight")
-    public String addFlight(FlightDto flightDto) {
-        System.out.println(flightDto);
-        adminService.addNewFlight(flightDto);
-        return "redirect:/admin/flights";
-    }
 }

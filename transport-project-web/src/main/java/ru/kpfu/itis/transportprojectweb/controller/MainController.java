@@ -12,4 +12,9 @@ public class MainController {
         return "mainPage";
     }
 
+    @GetMapping("/search")
+    public String getSearchPage() {
+        return "searchPage";
+    }
+
 }

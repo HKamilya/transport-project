@@ -5,6 +5,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.kpfu.itis.transportprojectapi.dto.FlightDto;
+import ru.kpfu.itis.transportprojectapi.dto.SearchForm;
 import ru.kpfu.itis.transportprojectapi.service.FlightService;
 import ru.kpfu.itis.transportprojectimpl.entity.FlightEntity;
 import ru.kpfu.itis.transportprojectimpl.entity.UserEntity;
@@ -15,7 +16,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -26,14 +29,12 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
     private ModelMapper modelMapper;
 
     @Override
-    public void save(FlightDto flightDto) {
+    public FlightDto save(FlightDto flightDto) {
         Date dateDep = null;
         Date dateArr = null;
         LocalTime timeDep = null;
         LocalTime timeArr = null;
         try {
-//            String timeDepPr = flightDto.getTimeDep() + ":00";
-//            String timeArrPr = flightDto.getTimeArr() + ":00";
             dateDep = new SimpleDateFormat("yyyy-MM-dd").parse(flightDto.getDateDep());
             dateArr = new SimpleDateFormat("yyyy-MM-dd").parse(flightDto.getDateArr());
             timeDep = LocalTime.parse(flightDto.getTimeDep());
@@ -46,15 +47,38 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
             flightEntity.setDateDep(dateDep);
             flightEntity.setTimeDep(timeDep);
             flightEntity.setTimeArr(timeArr);
-            flightRepository.save(flightEntity);
-
+            FlightEntity flightEntity1 = flightRepository.save(flightEntity);
+            modelMapper.map(flightEntity1, flightDto);
+            return flightDto;
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
     public void delete(Long id) {
         flightRepository.deleteById(id);
+    }
+
+    @Override
+    public List<FlightDto> search(SearchForm searchForm) {
+        Date date;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(searchForm.getDate());
+            List<FlightEntity> flightEntities = flightRepository.findAllByCityFromAndCityToAndDateDepAndCountOfPlacesGreaterThanEqual(searchForm.getCityFrom(), searchForm.getCityTo(), date, searchForm.getCountOfPerson());
+            List<FlightDto> flightDtoList = new ArrayList<>();
+            System.out.println(flightEntities);
+            for (FlightEntity flight : flightEntities) {
+                FlightDto flightDto = new FlightDto();
+                modelMapper.map(flight, flightDto);
+                flightDtoList.add(flightDto);
+            }
+
+            return flightDtoList;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

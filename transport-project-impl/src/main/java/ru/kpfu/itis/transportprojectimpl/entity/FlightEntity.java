@@ -1,6 +1,7 @@
 package ru.kpfu.itis.transportprojectimpl.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -8,6 +9,7 @@ import java.time.LocalTime;
 import java.util.Date;
 
 @Data
+@ToString
 @Entity
 @Table(name = "flight")
 public class FlightEntity {

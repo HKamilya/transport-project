@@ -48,11 +48,6 @@ public class AdminServiceImpl implements AdminService<UserDto, Long, FlightDto> 
     }
 
     @Override
-    public void addNewFlight(FlightDto flightDto) {
-        flightService.save(flightDto);
-    }
-
-    @Override
     public void deleteAdminOrUser(Long id) {
         userRepository.deleteById(id);
     }

@@ -6,8 +6,6 @@ public interface AdminService<UserDto, Long, FlightDto> {
 
     public void addNewAdmin(UserDto userDto);
 
-    public void addNewFlight(FlightDto flightDto);
-
     public void deleteAdminOrUser(Long id);
 
     public void deleteFlight(Long id);
