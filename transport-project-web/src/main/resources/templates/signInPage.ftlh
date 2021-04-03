@@ -56,6 +56,8 @@
                     </div>
                     <button type="submit" class="btn btn-outline-success">signIn</button>
                 </form>
+                <br>
+                <a class="nav-link" href="/oauth2/authorization/google">signIn with google</a>
             </div>
         </div>
     </div>

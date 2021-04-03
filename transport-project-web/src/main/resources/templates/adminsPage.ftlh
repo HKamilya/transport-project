@@ -4,6 +4,45 @@
     <meta charset="UTF-8">
     <title>admins</title>
     <link rel="stylesheet" href="/css/bootstrap.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(function () {
+            $('#button').on("click", function (event) {
+                event.preventDefault();
+                var username = $("#username").val()
+                var email = $("#email").val()
+                var firstname = $("#firstname").val()
+                var lastname = $("#lastname").val()
+                var password = $("#password").val()
+                var phoneNumber = $("#phoneNumber").val()
+                var dateOfBirth = $("#dateOfBirth").val()
+                var confPass = $("#confpassword").val()
+                if (password === confPass) {
+                    var data_json = {
+                        'username': username,
+                        'email': email,
+                        'firstname': firstname,
+                        'lastname': lastname,
+                        'password': password,
+                        'phoneNumber': phoneNumber,
+                        'dateOfBirth': dateOfBirth
+                    }
+                    console.log(JSON.stringify(data_json));
+                    $.ajax({
+                        type: "POST",
+                        url: "/admins",
+                        data: JSON.stringify(data_json),
+                        contentType: "application/json; charset = utf-8",
+                        success: function (result) {
+                        }
+                    });
+                } else {
+                    alert("password mismatch")
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 <h1>ADMINS</h1>
@@ -28,16 +67,72 @@
         </ul>
     </div>
 </nav>
-<form method="post" action="/admin/addAdmin">
-    <div class="text-success">Hi</div>
-    <input name="username" type="text" placeholder="username">
-    <input name="email" type="email" placeholder="email">
-    <input name="firstname" type="text" placeholder="firstname">
-    <input name="lastname" type="text" placeholder="lastname">
-    <input name="password" type="password" placeholder="password">
-    <input name="phoneNumber" type="number" placeholder="phone">
-    <input type="date" name="dateOfBirth" placeholder="date of birth">
-    <button type="submit">Ок</button>
-</form>
+
+<div class="row justify-content-md-center">
+    <div class="col-3">
+        <form>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" class="form-control" id="username"
+                           placeholder="Username">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" name="email" id="email"
+                           aria-describedby="emailHelp" placeholder="Enter email">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="firstname">Firstname</label>
+                    <input type="text" name="firstname" class="form-control" id="firstname"
+                           placeholder="Firstname">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="lastname">Lastname</label>
+                    <input type="text" name="lastname" class="form-control" id="lastname"
+                           placeholder="Lastname">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" class="form-control" id="password"
+                           placeholder="Password">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="phoneNumber">Phone</label>
+                    <input type="number" name="phoneNumber" class="form-control" id="phoneNumber"
+                           placeholder="Phone">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="confpassword">Confirm Password</label>
+                    <input type="password" name="confpassword" class="form-control" id="confpassword"
+                           placeholder="Password">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="dateOfBirth">Date of birth</label>
+                    <input type="date" name="dateOfBirth" class="form-control" id="dateOfBirth"
+                           placeholder="Date of birth">
+                </div>
+            </div>
+            <button type="submit" id="button" class="btn btn-outline-success">Add admin</button>
+        </form>
+    </div>
+    <div class="col-9">
+
+    </div>
+</div>
 </body>
 </html>

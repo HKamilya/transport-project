@@ -1,4 +1,4 @@
-package ru.kpfu.itis.transportprojectweb.controller;
+package ru.kpfu.itis.transportprojectweb.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +22,7 @@ public class SearchController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<List<FlightDto>> search(@RequestBody SearchForm searchForm) {
-        System.out.println(searchForm);
         List<FlightDto> list = flightService.search(searchForm);
-        System.out.println(list);
         return ResponseEntity.ok(list);
     }
 }

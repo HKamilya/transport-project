@@ -10,12 +10,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import ru.kpfu.itis.transportprojectweb.security.oauth.CustomOAuth2UserService;
+import ru.kpfu.itis.transportprojectweb.security.oauth.OAuth2LoginSuccessHandler;
+
 
 import javax.sql.DataSource;
-
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -32,6 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.authorizeRequests()
                 .antMatchers("/signUp").permitAll()
+                .antMatchers("/flights/**").permitAll()
                 .antMatchers("/signIn").permitAll()
                 .antMatchers("/profile").authenticated()
                 .antMatchers("/search").permitAll()
@@ -42,20 +46,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/addAdmin").hasAuthority("ADMIN")
                 .antMatchers("/admin/flights").hasAuthority("ADMIN")
                 .antMatchers("/admin/admins").hasAuthority("ADMIN")
+                .antMatchers("/oauth2/**").permitAll()
                 .and()
                 .formLogin()
-                .loginPage("/admin")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/admin/adminProfile")
-                .failureUrl("/admin?error")
-                .and()
-                .formLogin()
+//                .loginPage("/admin")
+//                .usernameParameter("username")
+//                .passwordParameter("password")
+//                .defaultSuccessUrl("/admin/adminProfile")
+//                .failureUrl("/admin?error")
+//                .and()
+//                .formLogin()
                 .loginPage("/signIn")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/profile")
                 .failureUrl("/signIn?error")
+                .and()
+                .oauth2Login()
+                .loginPage("/signIn")
+                .userInfoEndpoint().userService(oAuth2UserService)
+                .and()
+                .successHandler(oAuth2LoginSuccessHandler)
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
@@ -78,4 +89,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return jdbcTokenRepository;
     }
 
+    @Autowired
+    private CustomOAuth2UserService oAuth2UserService;
+
+    @Autowired
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 }

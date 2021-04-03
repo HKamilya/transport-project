@@ -3,6 +3,8 @@ package ru.kpfu.itis.transportprojectimpl.service;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.kpfu.itis.transportprojectapi.dto.FlightDto;
 import ru.kpfu.itis.transportprojectapi.dto.SearchForm;
@@ -19,7 +21,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
 @Service
 public class FlightServiceImpl implements FlightService<FlightDto, Long> {
@@ -62,6 +64,11 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
     }
 
     @Override
+    public Page<FlightDto> findAll(Pageable pageable) {
+        return flightRepository.findAll(pageable).map(flightEntity -> modelMapper.map(flightEntity, FlightDto.class));
+    }
+
+    @Override
     public List<FlightDto> search(SearchForm searchForm) {
         Date date;
         try {
@@ -80,5 +87,16 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        flightRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<FlightDto> findById(Long id) {
+        Optional<FlightEntity> flightOptional = flightRepository.findById(id);
+        return flightOptional.map(flightEntity -> Optional.of(modelMapper.map(flightEntity, FlightDto.class))).orElse(null);
     }
 }

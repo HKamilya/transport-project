@@ -38,7 +38,6 @@ public class AdminServiceImpl implements AdminService<UserDto, Long, FlightDto> 
             user.setId(null);
             user.setDateOfBirth(date1);
             user.setRole(UserEntity.Role.ADMIN);
-            user.setState(UserEntity.State.CONFIRMED);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             userRepository.save(user);

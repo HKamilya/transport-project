@@ -27,5 +27,8 @@
         </ul>
     </div>
 </nav>
+<div class="container">
+    Hi, user!
+</div>
 </body>
 </html>

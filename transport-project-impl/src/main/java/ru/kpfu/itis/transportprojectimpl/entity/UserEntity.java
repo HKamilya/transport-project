@@ -1,13 +1,16 @@
 package ru.kpfu.itis.transportprojectimpl.entity;
 
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Data
 @Entity
+@ToString
 @Table(name = "account")
 public class UserEntity {
     @Id
@@ -21,21 +24,17 @@ public class UserEntity {
     private String phoneNumber;
     @Enumerated(value = EnumType.STRING)
     private Role role;
-    @Enumerated(value = EnumType.STRING)
-    private State state;
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
-
-    public enum State {
-        CONFIRMED, NOT_CONFIRMED, BANNED
-    }
+    @Enumerated(value = EnumType.STRING)
+    private AuthProvider auth_provider;
 
     public enum Role {
         ADMIN, USER
     }
 
-    public Boolean isBanned() {
-        return this.state == State.BANNED;
+    public enum AuthProvider {
+        LOCAL, GOOGLE
     }
 
     public Boolean isAdmin() {
