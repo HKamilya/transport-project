@@ -24,4 +24,5 @@ public class ReservationEntity {
     public enum State {
         ACTIVE, COMPLETED
     }
+
 }

@@ -4,9 +4,11 @@ import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @ToString
@@ -31,4 +33,7 @@ public class FlightEntity {
     private LocalTime timeArr;
     private int countOfPlaces;
     private float price;
+
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
+    public List<ReservationEntity> reservations;
 }

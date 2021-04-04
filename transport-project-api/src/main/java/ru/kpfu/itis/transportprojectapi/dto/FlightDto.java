@@ -20,5 +20,6 @@ public class FlightDto {
     private String timeDep;
     private String timeArr;
     private int countOfPlaces;
+    private Long distance;
     private float price;
 }

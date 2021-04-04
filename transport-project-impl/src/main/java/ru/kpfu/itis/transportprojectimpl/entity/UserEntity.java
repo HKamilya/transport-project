@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,6 +37,9 @@ public class UserEntity {
     public enum AuthProvider {
         LOCAL, GOOGLE
     }
+
+    @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
+    public List<ReservationEntity> reservations;
 
     public Boolean isAdmin() {
         return this.role == Role.ADMIN;
