@@ -18,10 +18,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class FlightServiceImpl implements FlightService<FlightDto, Long> {
@@ -37,10 +35,32 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
         LocalTime timeDep = null;
         LocalTime timeArr = null;
         try {
-            dateDep = new SimpleDateFormat("yyyy-MM-dd").parse(flightDto.getDateDep());
-            dateArr = new SimpleDateFormat("yyyy-MM-dd").parse(flightDto.getDateArr());
-            timeDep = LocalTime.parse(flightDto.getTimeDep());
-            timeArr = LocalTime.parse(flightDto.getTimeArr());
+            if (flightDto.getTimeArr() == null) {
+                System.out.println(flightDto.getDistance());
+                double duration = (double) flightDto.getDistance() / 840 * 60 * 60 * 1000;
+                long second = (long) ((duration / 1000) % 60);
+                long minute = (long) ((duration / (1000 * 60)) % 60);
+                long hour = (long) ((duration / (1000 * 60 * 60)) % 24);
+
+                String time = String.format("%02d:%02d:%02d", hour, minute, second);
+                dateDep = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightDto.getDateDep() + " " + flightDto.getTimeDep());
+                DateFormat format = new SimpleDateFormat("HH:mm:ss");
+                Date date = format.parse(time);
+                long time1 = dateDep.getTime();
+                long time2 = (long) duration;
+                time2 = time1 + time2;
+                dateArr = dateDep;
+                dateArr.setTime(time2);
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                DateFormat df2 = new SimpleDateFormat("HH:mm:ss");
+                time = df2.format(dateArr);
+                dateArr = new SimpleDateFormat("yyyy-MM-dd").parse(df.format(dateArr));
+                timeArr = LocalTime.parse(time);
+                dateDep = new SimpleDateFormat("yyyy-MM-dd").parse(flightDto.getDateDep());
+                timeDep = LocalTime.parse(flightDto.getTimeDep());
+
+            }
+
 
             FlightEntity flightEntity = new FlightEntity();
             modelMapper.map(flightDto, flightEntity);

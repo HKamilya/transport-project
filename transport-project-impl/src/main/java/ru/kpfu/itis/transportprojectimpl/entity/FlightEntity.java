@@ -33,6 +33,7 @@ public class FlightEntity {
     private LocalTime timeArr;
     private int countOfPlaces;
     private float price;
+    private Long distance;
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
     public List<ReservationEntity> reservations;

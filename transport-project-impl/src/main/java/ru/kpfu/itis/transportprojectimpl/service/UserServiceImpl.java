@@ -60,6 +60,7 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
         user.setEmail(email);
         user.setFirstname(name);
         user.setLastname(lastname);
+        user.setRole(UserEntity.Role.USER);
         user.setAuth_provider(UserEntity.AuthProvider.GOOGLE);
         userRepository.save(user);
     }
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
     @Override
     public void updateUserAfterOAuth(UserDto userDto, String name, String provider) {
         UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-        if (provider == UserEntity.AuthProvider.GOOGLE.toString()) {
+        if (provider.equals(UserEntity.AuthProvider.GOOGLE.toString())) {
             userEntity.setAuth_provider(UserEntity.AuthProvider.GOOGLE);
         } else {
             userEntity.setAuth_provider(UserEntity.AuthProvider.LOCAL);

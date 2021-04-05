@@ -8,9 +8,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -18,7 +20,11 @@ import ru.kpfu.itis.transportprojectweb.security.oauth.CustomOAuth2UserService;
 import ru.kpfu.itis.transportprojectweb.security.oauth.OAuth2LoginSuccessHandler;
 
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -59,7 +65,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .loginPage("/signIn")
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/profile")
+                .successHandler(new AuthenticationSuccessHandler() {
+                    @Override
+                    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+                        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+                            httpServletResponse.sendRedirect("/admin/adminProfile");
+                        } else {
+                            httpServletResponse.sendRedirect("/profile");
+                        }
+                    }
+                })
                 .failureUrl("/signIn?error")
                 .and()
                 .oauth2Login()

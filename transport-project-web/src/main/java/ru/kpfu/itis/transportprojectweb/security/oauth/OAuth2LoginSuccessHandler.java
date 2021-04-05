@@ -31,7 +31,11 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         } else {
             userService.updateUserAfterOAuth(userDto, name, UserEntity.AuthProvider.GOOGLE.toString());
         }
-        response.sendRedirect("/profile");
+        if (oAuth2User.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            response.sendRedirect("/admin/adminProfile");
+        } else {
+            response.sendRedirect("/profile");
+        }
 
     }
 }

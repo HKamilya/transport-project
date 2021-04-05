@@ -31,11 +31,10 @@
                 var airportFrom = $("#airportFrom").val();
                 var planeType = $("#planeType").val();
                 var dateDep = $("#dateDep").val();
-                var dateArr = $("#dateArr").val();
                 var timeDep = $("#timeDep").val();
-                var timeArr = $("#timeArr").val();
                 var countOfPlaces = $("#countOfPlaces").val();
                 var price = $("#price").val();
+                var distance = $("#distance").val();
                 var data_json = {
                     'countryTo': countryTo,
                     'cityTo': cityTo,
@@ -45,9 +44,8 @@
                     'airportFrom': airportFrom,
                     'planeType': planeType,
                     'dateDep': dateDep,
-                    'dateArr': dateArr,
+                    'distance': distance,
                     'timeDep': timeDep,
-                    'timeArr': timeArr,
                     'countOfPlaces': countOfPlaces,
                     'price': price
                 }
@@ -104,8 +102,7 @@
                         <input id="planeType" name="planeType" type="text" placeholder="airplane type">
                         <input id="dateDep" name="dateDep" type="date" placeholder="departure date">
                         <input id="timeDep" name="timeDep" type="time" placeholder="departure time">
-                        <input id="dateArr" name="dateArr" type="date" placeholder="date of arrival">
-                        <input id="timeArr" name="timeArr" type="time" placeholder="time of arrival">
+                        <input id="distance" name="distance" type="text" step="0.1" placeholder="distance">
                         <input id="countOfPlaces" name="countOfPlaces" type="number" placeholder="count of passengers">
                         <input id="price" name="price" type="number" step="0.1" placeholder="price">
                         <button type="button" id="button">Add</button>
