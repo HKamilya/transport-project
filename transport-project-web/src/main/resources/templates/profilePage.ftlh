@@ -1,34 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>profile</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">ALPHA FLIGHT</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02"
-            aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<#ftl encoding="UTF-8"/>
+<#import "header.ftlh" as base>
+<#import  "spring.ftl" as spring/>
 
-    <div class="collapse navbar-collapse" id="navbarColor02">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/signIn">SignIn</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/signUp">SignUp</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/search">Search</a>
-            </li>
-        </ul>
+<@base.main>
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                <img src="user.png" style="width: 100%">
+            </div>
+            <div class="col-2">
+                ${username}!
+            </div>
+        </div>
+        <div class="col-12" style="min-height: 3em">
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6>New flights</h6>
+                <div class="jumbotron" id="flights2">
+                    <#list comingFlights as flight1>
+                        <div class="row" id="flights3">
+                            <div class="col-5">
+                                <h6 id="cityFrom">${flight1.flight.cityFrom.city}</h6>
+                                <h7 id="airportFrom">${flight1.flight.airportFrom}</h7>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-arrow-down"
+                                     viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                          d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                                </svg>
+                                <h6 id="cityTo">${flight1.flight.cityTo.city}</h6>
+                                <h7 id="airportFrom">${flight1.flight.airportTo}</h7>
+                            </div>
+                            <div class="col-3">
+                                <h6 id="dateDep">${flight1.flight.dateTimeDep}</h6>
+                                <h6 id="dateArr">${flight1.flight.dateTimeArr}</h6>
+                            </div>
+                            <div class="col-2">
+                                <h6 id="price">${flight1.flight.price}</h6>
+                            </div>
+                            <div class="col">
+                            </div>
+                        </div>
+                    </#list>
+                </div>
+            </div>
+            <div class="col">
+                <h6>Last flights</h6>
+                <div class="jumbotron" id="flights2">
+                    <#list comingFlights as flight1>
+                        <div class="row" id="flights3">
+                            <div class="col-5">
+                                <h6 id="cityFrom">${flight1.flight.cityFrom.city}</h6>
+                                <h7 id="airportFrom">${flight1.flight.airportFrom}</h7>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-arrow-down"
+                                     viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                          d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                                </svg>
+                                <h6 id="cityTo">${flight1.flight.cityTo.city}</h6>
+                                <h7 id="airportFrom">${flight1.flight.airportTo}</h7>
+                            </div>
+                            <div class="col-3">
+                                <h6 id="dateDep">${flight1.flight.dateTimeDep}</h6>
+                                <h6 id="dateArr">${flight1.flight.dateTimeArr}</h6>
+                            </div>
+                            <div class="col-2">
+                                <h6 id="price">${flight1.flight.price}</h6>
+                            </div>
+                            <div class="col">
+                            </div>
+                        </div>
+                    </#list>
+                </div>
+            </div>
+        </div>
     </div>
-</nav>
-<div class="container">
-    Hi, user!
-</div>
-</body>
-</html>
+</@base.main>

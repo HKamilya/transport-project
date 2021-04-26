@@ -76,4 +76,11 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
         userEntity.setFirstname(name);
         userRepository.save(userEntity);
     }
+
+    @Override
+    public UserDto findByEmailOrUsername(String email) {
+        Optional<UserEntity> optionalUser = userRepository.findByEmailOrUsername(email, email);
+        return optionalUser.map(userEntity -> modelMapper.map(userEntity, UserDto.class)).orElse(null);
+
+    }
 }

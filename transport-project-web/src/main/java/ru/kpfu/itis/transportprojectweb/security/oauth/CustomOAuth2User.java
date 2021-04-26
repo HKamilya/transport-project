@@ -1,11 +1,15 @@
 package ru.kpfu.itis.transportprojectweb.security.oauth;
 
+import lombok.Data;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import ru.kpfu.itis.transportprojectweb.security.details.UserDetailsImpl;
 
 import java.util.Collection;
 import java.util.Map;
 
+@ToString
 public class CustomOAuth2User implements OAuth2User {
 
     private OAuth2User oAuth2User;
@@ -33,7 +37,7 @@ public class CustomOAuth2User implements OAuth2User {
         return oAuth2User.getAttribute("family_name");
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return oAuth2User.getAttribute("email");
     }
 }

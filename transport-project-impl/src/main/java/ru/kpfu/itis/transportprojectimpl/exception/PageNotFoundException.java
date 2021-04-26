@@ -1,4 +1,4 @@
-package ru.kpfu.itis.transportprojectweb.exception;
+package ru.kpfu.itis.transportprojectimpl.exception;
 
 
 import org.springframework.http.HttpStatus;

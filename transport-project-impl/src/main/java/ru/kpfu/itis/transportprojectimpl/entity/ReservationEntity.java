@@ -10,6 +10,7 @@ import java.util.List;
 @Table(name = "reservation")
 public class ReservationEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
@@ -18,11 +19,8 @@ public class ReservationEntity {
     @ManyToOne
     public UserEntity passenger;
 
-    @Enumerated(EnumType.STRING)
-    private State state;
 
-    public enum State {
-        ACTIVE, COMPLETED
-    }
+    private Integer countOfPlaces;
+
 
 }

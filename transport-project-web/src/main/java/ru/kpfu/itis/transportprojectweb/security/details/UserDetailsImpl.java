@@ -52,7 +52,16 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+    public Long getId() {
+        return userEntity.getId();
+    }
+
+    public String getEmail() {
+        return userEntity.getEmail();
+    }
+
     public String getRole() {
         return userEntity.getRole().toString();
     }
+
 }

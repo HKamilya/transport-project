@@ -16,4 +16,6 @@ public interface UserService<UserD, Long> {
     void signUpAfterOAuth(String email, String name, String lastname, String provider);
 
     void updateUserAfterOAuth(UserDto userDto, String name, String toString);
+
+    UserDto findByEmailOrUsername(String email);
 }

@@ -1,7 +1,6 @@
 package ru.kpfu.itis.transportprojectimpl.entity;
 
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
@@ -17,10 +16,12 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(unique = true)
     private String email;
     private String firstname;
     private String password;
     private String lastname;
+    @Column(unique = true)
     private String username;
     private String phoneNumber;
     @Enumerated(value = EnumType.STRING)
@@ -29,6 +30,7 @@ public class UserEntity {
     private Date dateOfBirth;
     @Enumerated(value = EnumType.STRING)
     private AuthProvider auth_provider;
+    private String refreshToken;
 
     public enum Role {
         ADMIN, USER

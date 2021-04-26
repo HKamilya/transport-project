@@ -1,143 +1,117 @@
-<#import "/spring.ftl" as spring>
+<#ftl encoding="UTF-8"/>
+<#import "header.ftlh" as base>
+<#import  "spring.ftl" as spring/>
 
-<!DOCTYPE html>
-<html lang="en">
+<@base.main>
+    <div class="col-12" style="min-height: 3em">
 
-<head>
-    <title>Register Form</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">ALPHA FLIGHT</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02"
-            aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarColor02">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/signIn">SignIn</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/signUp">SignUp</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/search">Search</a>
-            </li>
-        </ul>
     </div>
-</nav>
-<div class="col-12" style="min-height: 3em">
-
-</div>
-<div class="container">
-    <div class="card text-white bg-dark mb-3" style="max-width: available;">
-        <div class="card-body">
-            <#if existErr??>
-                <p class="text-danger">
-                    ${existErr}
-                </p>
-            </#if>
-            <form method="POST" action="/signUp">
-                <div class="row justify-content-md-center">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="exampleInputUsername">Username</label>
-                            <input type="text" name="username" class="form-control" id="exampleInputUsername"
-                                   placeholder="Username" value="<#if userForm??>${userForm.username}</#if>">
+    <div class="container">
+        <div class="card text-white bg-dark mb-3" style="max-width: available;">
+            <div class="card-body">
+                <#if existErr??>
+                    <p class="text-danger">
+                        ${existErr}
+                    </p>
+                </#if>
+                <form method="POST" action="/signUp">
+                    <div class="row justify-content-md-center">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputUsername">Username</label>
+                                <input type="text" name="username" class="form-control" id="exampleInputUsername"
+                                       placeholder="Username" value="<#if userForm??>${userForm.username}</#if>">
+                            </div>
+                        </div>
+                        <div class=" col-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" class="form-control ${(emailError??)?string('is-invalid','')}"
+                                       name="email" id="exampleInputEmail1"
+                                       aria-describedby="emailHelp" placeholder="Enter email"
+                                       value="<#if userForm??>${userForm.email}</#if>">
+                                <#if emailError??>
+                                    <div class="invalid-feedback">
+                                        ${emailError}
+                                    </div>
+                                </#if>
+                                <small id="emailHelp" class="form-text text-muted">We'll never share your email with
+                                    anyone
+                                    else.</small>
+                            </div>
                         </div>
                     </div>
-                    <div class=" col-6">
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Email address</label>
-                            <input type="email" class="form-control ${(emailError??)?string('is-invalid','')}"
-                                   name="email" id="exampleInputEmail1"
-                                   aria-describedby="emailHelp" placeholder="Enter email"
-                                   value="<#if userForm??>${userForm.email}</#if>">
-                            <#if emailError??>
-                                <div class="invalid-feedback">
-                                    ${emailError}
-                                </div>
-                            </#if>
-                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                                else.</small>
+                    <div class="row justify-content-md-center">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputFirstname">Firstname</label>
+                                <input type="text" name="firstname" class="form-control" id="exampleInputFirstname"
+                                       placeholder="Firstname">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputLastname">Lastname</label>
+                                <input type="text" name="lastname" class="form-control" id="exampleInputLastname"
+                                       placeholder="Lastname">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row justify-content-md-center">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="exampleInputFirstname">Firstname</label>
-                            <input type="text" name="firstname" class="form-control" id="exampleInputFirstname"
-                                   placeholder="Firstname">
+                    <div class="row justify-content-md-center">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" name="password"
+                                       class="form-control ${(passwordError??)?string('is-invalid','')}"
+                                       id="password"
+                                       placeholder="Password">
+                                <#if passwordsErrorMessage??>
+                                    <p class="text-danger">
+                                        ${passwordsErrorMessage}
+                                    </p>
+                                </#if>
+                                <#if passwordError??>
+                                    <div class="invalid-feedback">
+                                        ${passwordError}
+                                    </div>
+                                </#if>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputPhone">Phone</label>
+                                <input type="number" name="phoneNumber" class="form-control" id="exampleInputPhone"
+                                       placeholder="Phone" value="<#if userForm??>${userForm.phoneNumber}</#if>">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="exampleInputLastname">Lastname</label>
-                            <input type="text" name="lastname" class="form-control" id="exampleInputLastname"
-                                   placeholder="Lastname">
+                    <div class=" row justify-content-md-center">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="password2">Confirm Password</label>
+                                <input type="password" name="password2"
+                                       class="form-control ${(password2Error??)?string('is-invalid','')}"
+                                       id="password2"
+                                       placeholder="Password">
+                                <#if password2Error??>
+                                    <div class="invalid-feedback">
+                                        ${password2Error}
+                                    </div>
+                                </#if>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputDate">Date of birth</label>
+                                <input type="date" name="dateOfBirth" class="form-control" id="exampleInputDate"
+                                       placeholder="Date of birth"
+                                       value="<#if userForm??>${userForm.dateOfBirth}</#if>">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row justify-content-md-center">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" name="password"
-                                   class="form-control ${(passwordError??)?string('is-invalid','')}"
-                                   id="password"
-                                   placeholder="Password">
-                            <#if passwordsErrorMessage??>
-                                <p class="text-danger">
-                                    ${passwordsErrorMessage}
-                                </p>
-                            </#if>
-                            <#if passwordError??>
-                                <div class="invalid-feedback">
-                                    ${passwordError}
-                                </div>
-                            </#if>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="exampleInputPhone">Phone</label>
-                            <input type="number" name="phoneNumber" class="form-control" id="exampleInputPhone"
-                                   placeholder="Phone" value="<#if userForm??>${userForm.phoneNumber}</#if>">
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-md-center">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="password2">Confirm Password</label>
-                            <input type="password" name="password2"
-                                   class="form-control ${(password2Error??)?string('is-invalid','')}"
-                                   id="password2"
-                                   placeholder="Password">
-                            <#if password2Error??>
-                                <div class="invalid-feedback">
-                                    ${password2Error}
-                                </div>
-                            </#if>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="exampleInputDate">Date of birth</label>
-                            <input type="date" name="dateOfBirth" class="form-control" id="exampleInputDate"
-                                   placeholder="Date of birth"
-                                   value="<#if userForm??>${userForm.dateOfBirth}</#if>">
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-outline-success">signUp</button>
-            </form>
+                    <button type="submit" class="btn btn-outline-success">signUp</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-</body>
-</html>
+</@base.main>
