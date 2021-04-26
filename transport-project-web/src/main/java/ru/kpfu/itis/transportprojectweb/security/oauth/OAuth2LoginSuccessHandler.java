@@ -26,10 +26,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String name = oAuth2User.getName();
         String lastname = oAuth2User.getLastname();
         UserDto userDto = userService.findByEmail(email);
+        System.out.println("by em");
         if (userDto == null) {
             userService.signUpAfterOAuth(email, name, lastname, UserEntity.AuthProvider.GOOGLE.toString());
         } else {
+            System.out.println("bef upd");
             userService.updateUserAfterOAuth(userDto, name, UserEntity.AuthProvider.GOOGLE.toString());
+            System.out.println("upd");
         }
         if (oAuth2User.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
             response.sendRedirect("/admin/adminProfile");

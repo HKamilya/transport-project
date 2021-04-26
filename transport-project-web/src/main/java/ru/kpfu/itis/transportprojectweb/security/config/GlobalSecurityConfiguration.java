@@ -15,9 +15,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import ru.kpfu.itis.transportprojectweb.security.jwt.JwtFilter;
 import ru.kpfu.itis.transportprojectweb.security.oauth.CustomOAuth2UserService;
 import ru.kpfu.itis.transportprojectweb.security.oauth.OAuth2LoginSuccessHandler;
 
@@ -35,7 +37,7 @@ public class GlobalSecurityConfiguration {
     public static class ApiSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Autowired
-        private PasswordEncoder passwordEncoder;
+        private JwtFilter jwtFilter;
 
 
         @Bean
@@ -53,12 +55,16 @@ public class GlobalSecurityConfiguration {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .authorizeRequests()
-                    .antMatchers("/api/flights/**").permitAll()
+                    .antMatchers("/api/flights").permitAll()
                     .antMatchers("/api/auth/login").permitAll()
                     .antMatchers("/api/auth/refreshToken").permitAll()
-                    .antMatchers("/api/flights/reservations/**").authenticated()
-                    .antMatchers("/api/search").permitAll();
-//        }
+                    .antMatchers("/api/reservations/**").authenticated()
+                    .antMatchers("/api/search").permitAll()
+                    .antMatchers("/api/test/admin").hasAuthority("ADMIN")
+                    .antMatchers("/api/test/user").hasAuthority("USER")
+                    .anyRequest().authenticated()
+                    .and()
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         }
     }
 

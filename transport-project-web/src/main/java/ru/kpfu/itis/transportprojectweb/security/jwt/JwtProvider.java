@@ -3,15 +3,24 @@ package ru.kpfu.itis.transportprojectweb.security.jwt;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.kpfu.itis.transportprojectweb.security.details.UserDetailsImpl;
+import ru.kpfu.itis.transportprojectweb.security.details.UserDetailsServiceImpl;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Component
-public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+public class JwtProvider {
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+    private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
 
     @Value("${jwt.token.secret}")
     private String jwtSecret;
@@ -27,6 +36,11 @@ public class JwtUtils {
         return Jwts.builder().setSubject(username).setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUserNameFromJwtToken(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public String getUserNameFromJwtToken(String token) {
@@ -50,6 +64,14 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public String resolveToken(HttpServletRequest req) {
+        String bearerToken = req.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7, bearerToken.length());
+        }
+        return null;
     }
 
 }

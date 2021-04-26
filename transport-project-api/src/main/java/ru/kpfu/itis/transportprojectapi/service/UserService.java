@@ -18,4 +18,6 @@ public interface UserService<UserD, Long> {
     void updateUserAfterOAuth(UserDto userDto, String name, String toString);
 
     UserDto findByEmailOrUsername(String email);
+
+    Optional<UserDto> findByUsername(String username);
 }

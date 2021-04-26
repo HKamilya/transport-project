@@ -51,13 +51,13 @@ public class ReservationServiceImpl implements ReservationService<ReservationDto
     public List<ReservationDto> findAllComingFlights(String email) {
         UserDto userDto = userService.findByEmail(email);
         List<ReservationDto> reservationDtos = new ArrayList<>();
-        System.out.println("stop");
         List<ReservationEntity> reservationEntities = reservationRepository
                 .findAll(SpecificationUtils
                         .byPassengerId(userDto.getId())
                         .and((root, criteriaQuery, criteriaBuilder) -> {
                             root.fetch("flight").fetch("cityTo");
                             root.fetch("flight").fetch("cityFrom");
+                            root.fetch("passenger");
                             return null;
                         }));
         for (ReservationEntity reservation : reservationEntities) {
