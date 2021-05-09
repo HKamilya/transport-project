@@ -21,8 +21,18 @@
     <div class="row">
 
     </div>
-    <a href="/admin/admins">add new admin</a>
-    <a href="/admin/flights/get">change flights</a>
+
+    <div class="col-12">
+        <div class="col-2"><a href="/admin/admins">add new admin</a></div>
+    </div>
+    <div class="col-12">
+        <div class="col-2">
+            <a href="/admin/flights/get">change flights</a>
+        </div>
+    </div>
+
+
+
     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal">
         delete profile
     </button>
