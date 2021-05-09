@@ -17,25 +17,28 @@
         </div>
         <div class="col-12" style="min-height: 3em">
         </div>
-    </div>
-    <div class="row">
 
-    </div>
+        <div class="row">
 
-    <div class="col-12">
-        <div class="col-2"><a href="/admin/admins">add new admin</a></div>
-    </div>
-    <div class="col-12">
-        <div class="col-2">
-            <a href="/admin/flights/get">change flights</a>
         </div>
+
+        <div class="col-12">
+            <div class="col-2"><a href="/admin/admins">add new admin</a></div>
+        </div>
+        <div class="col-12" style="height: 1em"></div>
+        <div class="col-12">
+            <div class="col-2">
+                <a href="/admin/flights/get">change flights</a>
+            </div>
+        </div>
+
+        <div class="col-12" style="height: 1em"></div>
+
+        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal">
+            delete profile
+        </button>
     </div>
 
-
-
-    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal">
-        delete profile
-    </button>
 
 
 
@@ -70,4 +73,6 @@
             </div>
         </div>
     </div>
+
+
 </@base.main>

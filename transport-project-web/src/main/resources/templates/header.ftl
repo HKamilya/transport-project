@@ -18,7 +18,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
     </head>
-    <body>
+    <body style="height: 100%">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">ALPHA FLIGHT</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02"
