@@ -16,6 +16,7 @@ import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -40,26 +41,21 @@ public class SignUpController {
                     fieldError -> fieldError.getField() + "Error",
                     FieldError::getDefaultMessage
             );
-            bindingResult.getAllErrors().stream().anyMatch(error -> {
-                if (Objects.requireNonNull(error.getCodes())[0].equals("userForm.ValidNames")) {
-                    model.addAttribute("passwordsErrorMessage", error.getDefaultMessage());
-                    System.out.println("pass");
-                }
-                return true;
-            });
             Map<String, String> errorsMap = bindingResult.getFieldErrors().stream().collect(collector);
             model.mergeAttributes(errorsMap);
             model.addAttribute("userForm", userForm);
+
+            bindingResult.getAllErrors().stream().anyMatch(error -> {
+                if (Objects.requireNonNull(error.getCodes())[0].equals("PasswordMatch.userForm")) {
+                    model.addAttribute("passwordMatchError", error.getDefaultMessage());
+                }
+                return true;
+            });
             return "signUpPage";
+
         } else {
-            UserDto userDto = userService.findByEmail(userForm.getEmail());
-            if (userDto == null) {
-                userService.signUp(modelMapper.map(userForm, UserDto.class));
-                return "redirect:/profile";
-            } else {
-                model.addAttribute("existErr", "It seems that such user already exists.");
-            }
-            return "signUpPage";
+            userService.save(modelMapper.map(userForm, UserDto.class));
+            return "redirect:/signIn";
         }
     }
 }

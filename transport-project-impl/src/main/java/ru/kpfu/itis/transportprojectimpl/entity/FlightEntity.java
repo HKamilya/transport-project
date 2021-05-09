@@ -2,6 +2,8 @@ package ru.kpfu.itis.transportprojectimpl.entity;
 
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
@@ -23,20 +25,21 @@ public class FlightEntity {
     private CityEntity cityFrom;
     private String airportFrom;
     private String airportTo;
-    private String planeType;
+    @ManyToOne
+    private PlaneEntity planeType;
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTimeDep;
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTimeArr;
-    private int countOfPlaces;
     private double distance;
     private int price;
+    private int countOfPlaces;
 
     @Enumerated(EnumType.STRING)
     private State state;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<ReservationEntity> reservations;
 
     public enum State {

@@ -10,9 +10,8 @@ import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import ru.kpfu.itis.transportprojectimpl.config.ImplConfiguration;
 
 @Configuration
-@Import({ImplConfiguration.class})
+@Import({ImplConfiguration.class, WebSocketConfig.class})
 public class WebConfiguration {
-
 
 
 }

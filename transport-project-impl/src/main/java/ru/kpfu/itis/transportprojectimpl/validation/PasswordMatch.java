@@ -7,24 +7,24 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = NamesValidator.class)
+@Constraint(validatedBy = PasswordMatchValidator.class)
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidNames {
+public @interface PasswordMatch
+{
     String message() default "password doesn't match";
 
     String password();
 
-    String password2();
+    String confirmPassword();
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {
-        ValidNames[] value();
+        PasswordMatch[] value();
     }
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 }
-

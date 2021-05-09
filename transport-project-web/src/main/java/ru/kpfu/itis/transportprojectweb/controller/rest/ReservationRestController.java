@@ -10,6 +10,8 @@ import ru.kpfu.itis.transportprojectapi.dto.FlightForm;
 import ru.kpfu.itis.transportprojectapi.dto.ReservationDto;
 import ru.kpfu.itis.transportprojectapi.service.ReservationService;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -18,9 +20,14 @@ public class ReservationRestController {
     @Autowired
     private ReservationService reservationService;
 
-    @GetMapping("/{email}")
+    @GetMapping("/future/{email}")
     public List<FlightDto> findAllComingFlights(@PathVariable String email, Pageable pageable) {
-        return (List<FlightDto>) reservationService.findAllComingFlights(email);
+        return (List<FlightDto>) reservationService.findAllComingFlights(email, new Date());
+    }
+
+    @GetMapping("/past/{email}")
+    public List<FlightDto> findAllPrevFlights(@PathVariable String email, Pageable pageable) {
+        return (List<FlightDto>) reservationService.findAllLastFlights(email, new Date());
     }
 
     @PostMapping

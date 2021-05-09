@@ -1,5 +1,5 @@
 <#ftl encoding="UTF-8"/>
-<#import "header.ftlh" as base>
+<#import "header.ftl" as base>
 <#import  "spring.ftl" as spring/>
 
 <@base.main>

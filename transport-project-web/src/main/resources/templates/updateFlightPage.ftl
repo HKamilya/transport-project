@@ -1,9 +1,56 @@
 <#ftl encoding="UTF-8"/>
-<#import "header.ftlh" as base>
+<#import "header.ftl" as base>
 <#import  "spring.ftl" as spring/>
 
 <@base.main>
-    <div class="container" onload="priceFunc()">
+    <script src="/js/autocomplete.js"></script>
+    <script>
+        var stompClient = null;
+        const handlers = []
+
+        function connect() {
+            const socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, frame => {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/schedule', flight => {
+
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            console.log("Disconnected");
+        }
+
+        function sendFlight() {
+            var data_json = {
+                countryTo: document.getElementById('countryTo').value,
+                cityTo: document.getElementById('cityTo').value,
+                airportTo: document.getElementById('airportTo').value,
+                countryFrom: document.getElementById('countryFrom').value,
+                cityFrom: document.getElementById("cityFrom").value,
+                airportFrom: document.getElementById("airportFrom").value,
+                planeType: document.getElementById("planeType").value,
+                dateTimeDep: document.getElementById("dateTimeDep").value,
+                countOfPlaces: document.getElementById("countOfPlaces").value,
+                price: document.getElementById("price").value,
+                state: document.getElementById("state").value
+            }
+            console.log(data_json)
+            stompClient.send("/app/changeFlight", {}, JSON.stringify(data_json));
+        }
+
+        window.onload(connect())
+
+        cities = ${cities}
+        autocomplete(document.getElementById("cityFrom"), cities)
+        autocomplete(document.getElementById("cityTo"), cities)
+    </script>
+    <div class="container">
         <div class="justify-content-center row">
             <div class="col-8">
                 <div class="jumbotron">
@@ -16,7 +63,8 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="cityFrom">City from:</label>
-                                <input type="text" class="form-control" value="${flight.cityFrom.city}" name="cityFrom">
+                                <input type="text" id="cityFrom" class="form-control" value="${flight.cityFrom.city}"
+                                       name="cityFrom">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="airportFrom">Airport from:</label>
@@ -24,8 +72,12 @@
                                        name="airportFrom">
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label" for="planeType">Plane type:</label>
-                                <input type="text" class="form-control" value="${flight.planeType}" name="planeType">
+                                <select class="custom-select" name="planeType" id="planeType">
+                                    <option selected value="${flight.planeType.id}">${flight.planeType.name}</option>
+                                    <#list planes as plane>
+                                        <option value="${plane.id}">${plane.name}</option>
+                                    </#list>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="countOfPlaces">Count of passengers:</label>
@@ -42,11 +94,13 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="cityTo">City to:</label>
-                                <input type="text" class="form-control" value="${flight.cityTo.city}" name="cityTo">
+                                <input type="text" id="cityTo" class="form-control" value="${flight.cityTo.city}"
+                                       name="cityTo">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="airportTo">Airport to:</label>
-                                <input type="text" class="form-control" value="${flight.airportTo}" name="airportTo">
+                                <input type="text" class="form-control" value="${flight.airportTo}"
+                                       name="airportTo">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="dateTimeDep">Departure date:</label>
@@ -55,10 +109,11 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="price">Price:</label>
-                                <input type="text" class="form-control" value="${price}" name="price" id="priceInput">
+                                <input type="text" class="form-control" value="${price}" name="price"
+                                       id="priceInput">
                             </div>
                             <div class="form-group">
-                                <select class="custom-select" name="state">
+                                <select class="custom-select" name="state" id="state">
                                     <option value="ACTIVE">ACTIVE</option>
                                     <option value="CANCELED">CANCELED</option>
                                 </select>

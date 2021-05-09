@@ -19,12 +19,14 @@ public class ReservationController {
     @PostMapping("/reserve")
     public String reserveFlight(@AuthenticationPrincipal UserDetailsImpl userDetails, @AuthenticationPrincipal CustomOAuth2User oAuth2User, @RequestParam("ids") String ids, @RequestParam("count") int count, Model model) {
         String userEmail = "";
+        System.out.println(ids);
         if (userDetails != null) {
             userEmail = userDetails.getEmail();
         }
         if (oAuth2User != null) {
             userEmail = oAuth2User.getEmail();
         }
+        System.out.println(userEmail);
         ids = ids.trim();
         String[] flight = ids.split(" ");
         reservationService.save(flight, userEmail, count);

@@ -7,17 +7,26 @@ import java.util.Optional;
 
 public interface UserService<UserD, Long> {
 
+
     public void signUp(UserDto user);
+
 
     public void save(UserDto userDto);
 
-    public UserDto findByEmail(String email);
+    public Optional<UserDto> findByEmail(String email);
 
-    void signUpAfterOAuth(String email, String name, String lastname, String provider);
 
-    void updateUserAfterOAuth(UserDto userDto, String name, String toString);
+    public void signUpAfterOAuth(String email, String name, String lastname, String provider);
 
-    UserDto findByEmailOrUsername(String email);
+
+    public void updateUserAfterOAuth(UserDto userDto, String name, String toString);
+
+
+    public UserDto findByEmailOrUsername(String email);
+
 
     Optional<UserDto> findByUsername(String username);
+
+    void deleteById(Long id);
+
 }

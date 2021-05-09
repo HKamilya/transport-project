@@ -7,13 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.kpfu.itis.transportprojectapi.dto.FlightDto;
-import ru.kpfu.itis.transportprojectapi.dto.FlightForm;
-import ru.kpfu.itis.transportprojectapi.dto.SearchForm;
+import ru.kpfu.itis.transportprojectapi.dto.*;
 import ru.kpfu.itis.transportprojectapi.service.CityService;
 import ru.kpfu.itis.transportprojectapi.service.FlightService;
+import ru.kpfu.itis.transportprojectapi.service.PlaneService;
+import ru.kpfu.itis.transportprojectimpl.aspect.Cacheable;
 import ru.kpfu.itis.transportprojectimpl.entity.CityEntity;
 import ru.kpfu.itis.transportprojectimpl.entity.FlightEntity;
+import ru.kpfu.itis.transportprojectimpl.entity.PlaneEntity;
 import ru.kpfu.itis.transportprojectimpl.repository.FlightRepository;
 import ru.kpfu.itis.transportprojectimpl.util.JsonReader;
 
@@ -22,8 +23,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -36,48 +35,38 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
     private ModelMapper modelMapper;
     @Autowired
     private CityService cityService;
+    @Autowired
+    private PlaneService planeService;
 
 
     @Override
-    public void temp() {
-        Optional<FlightEntity> flightEntity = flightRepository.findById(8L);
-        System.out.println(flightEntity.get().reservations);
+    public FlightDto save(FlightDto flightDto) {
+        FlightEntity entity = flightRepository.save(modelMapper.map(flightDto, FlightEntity.class));
+        return modelMapper.map(entity, FlightDto.class);
     }
 
     @Override
     public FlightDto save(FlightForm form) {
+        PlaneDto planeDto = planeService.findById(form.getPlaneType());
         Date dateTimeDep = null;
         Date dateArr = null;
         JsonReader jsonReader = new JsonReader();
         try {
             double[] to = jsonReader.main(form.getCityTo(), form.getCountryTo());
             double[] from = jsonReader.main(form.getCityFrom(), form.getCountryFrom());
-            System.out.println();
             double distance = distance(to[0], from[0], to[1], from[1]);
-            System.out.println(distance);
-            double duration = Math.abs(distance) / 840 * 60 * 60 * 1000;
-            long second = (long) ((duration / 1000) % 60);
-            long minute = (long) ((duration / (1000 * 60)) % 60);
-            long hour = (long) ((duration / (1000 * 60 * 60)) % 24);
+            double duration = Math.abs(distance) / planeDto.getSpeed() * 60 * 60 * 1000 + 3000000;
 
-            String time = String.format("%02d:%02d:%02d", hour, minute, second);
-            System.out.println(time);
             dateTimeDep = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(form.getDateTimeDep().replace('T', ' ') + ":00");
-            DateFormat format = new SimpleDateFormat("HH:mm:ss");
-            Date date = format.parse(time);
             long time1 = dateTimeDep.getTime();
-            System.out.println(date);
             long time2;
-            System.out.println(duration);
             time2 = (long) (time1 + duration);
             dateArr = dateTimeDep;
             dateArr.setTime(time2);
-            System.out.println(dateArr);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             dateArr = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(df.format(dateArr));
             dateTimeDep = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(form.getDateTimeDep().replace('T', ' '));
-            System.out.println(dateTimeDep);
-            System.out.println(dateArr);
+
 
             FlightEntity flightEntity = new FlightEntity();
             modelMapper.map(form, flightEntity);
@@ -85,7 +74,9 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
             flightEntity.setCityFrom(modelMapper.map(cityService.findByName(form.getCityFrom()).get(), CityEntity.class));
             flightEntity.setDateTimeArr(dateArr);
             flightEntity.setDateTimeDep(dateTimeDep);
+            flightEntity.setPlaneType(modelMapper.map(planeDto, PlaneEntity.class));
             flightEntity.setDistance(distance);
+            flightEntity.setCountOfPlaces(planeDto.getCountOfPlaces());
             if (flightEntity.getId() == null) {
                 flightEntity.setState(FlightEntity.State.ACTIVE);
             }
@@ -104,38 +95,46 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
 
     @Override
     public Page<FlightDto> findAll(Pageable pageable) {
-        return flightRepository.findAll(SpecificationUtils.byId(0L)
-                .and(((root, criteriaQuery, criteriaBuilder) -> {
-                    root.fetch("cityTo");
-                    root.fetch("cityFrom");
-                    return null;
-                })), pageable).map(flightEntity -> modelMapper.map(flightEntity, FlightDto.class));
+        return flightRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
+            if (criteriaQuery.getResultType().equals(Long.class)) {
+                return null;
+            } else {
+                root.fetch("cityTo");
+                root.fetch("cityFrom");
+                root.fetch("planeType");
+                return null;
+            }
+        }, pageable).map(flightEntity -> modelMapper.map(flightEntity, FlightDto.class));
+        //    return flightRepository.findAll(pageable).map(flightEntity -> modelMapper.map(flightEntity, FlightDto.class));
     }
 
-    @Override
-    public List<FlightDto> search(SearchForm searchForm) {
+    public List<FlightEntity> search(SearchForm searchForm) {
         Date date;
         try {
             date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(searchForm.getDate() + " 00:00:00");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar c = Calendar.getInstance();
+            c.setTime(sdf.parse(searchForm.getDate()));
+            c.add(Calendar.DATE, 2);
+            String dateStr = sdf.format(c.getTime());
+            Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+
             List<FlightEntity> flightEntities = flightRepository
                     .findAll(SpecificationUtils
                             .byCityFrom_City(searchForm.getCityFrom())
                             .and(SpecificationUtils.byCityTo_City(searchForm.getCityTo()))
                             .and(SpecificationUtils.byDateTimeDepGreaterThanEqual(date))
+                            .and(SpecificationUtils.byDateTimeDepLessThanEqual(date1))
                             .and(SpecificationUtils.byCountOfPlacesGreaterThanEqual(searchForm.getCountOfPerson()))
                             .and((root, criteriaQuery, criteriaBuilder) -> {
                                 root.fetch("cityTo");
                                 root.fetch("cityFrom");
+                                root.fetch("planeType");
                                 return null;
                             }));
-            List<FlightDto> flightDtoList = new ArrayList<>();
+            List<FlightEntity> flightDtoList = new ArrayList<>();
             for (FlightEntity flight : flightEntities) {
-                FlightDto flightDto = new FlightDto();
-                flight.setDateTimeDep(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flight.getDateTimeDep().toString()));
-                flight.setDateTimeArr(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flight.getDateTimeArr().toString()));
-
-                modelMapper.map(flight, flightDto);
-                flightDtoList.add(flightDto);
+                flightDtoList.add(flight);
             }
 
             return flightDtoList;
@@ -151,14 +150,23 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
     }
 
     @Override
+    @Cacheable
     public Optional<FlightDto> findById(Long id) {
-        Optional<FlightEntity> flightOptional = flightRepository.findById(id);
+        Optional<FlightEntity> flightOptional = flightRepository
+                .findOne(SpecificationUtils.byId(id)
+                        .and((root, criteriaQuery, criteriaBuilder) -> {
+                            root.fetch("cityTo")
+                                    .getParent().fetch("cityFrom")
+                                    .getParent().fetch("planeType");
+                            return null;
+                        }));
         return flightOptional.map(flightEntity -> Optional.of(modelMapper.map(flightEntity, FlightDto.class))).orElse(null);
     }
 
+
     @Override
-    public List<List<FlightDto>> findOptimalWayByDistance(SearchForm searchForm) {
-        List<List<FlightDto>> flights = new ArrayList<>();
+    public List<FlightsList> findOptimalWayByDistance(SearchForm searchForm) {
+        List<FlightsList> flights = new ArrayList<>();
         try {
             Date date = new SimpleDateFormat("yyyy-MM-dd").parse(searchForm.getDate());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -168,11 +176,17 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
             String dateStr = sdf.format(c.getTime());
             Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
             int k = 0;
-            List<FlightDto> flightDtoList = search(searchForm);
-            for (int i = 0; i < flightDtoList.size(); i++) {
+            List<FlightEntity> flightDtoList = search(searchForm);
+            for (FlightEntity flightDto : flightDtoList) {
+                FlightsList flightsList = new FlightsList();
+                flightsList.setFlights(new ArrayList<>());
+                FlightDto flightDto1 = modelMapper.map(flightDto, FlightDto.class);
+                flightsList.getFlights().add(flightDto1);
+                flightsList.setDistance(flightDto.getDistance());
+                flightsList.setPrice(flightDto.getPrice());
+                flightsList.setTime(flightDto.getDateTimeArr().getTime() - flightDto.getDateTimeDep().getTime());
+                flights.add(flightsList);
                 k++;
-                flights.add(new ArrayList<>());
-                flights.get(i).add(flightDtoList.get(i));
             }
             List<FlightEntity> flightEntities = flightRepository
                     .findAll(SpecificationUtils
@@ -183,15 +197,20 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
                             .and((root, criteriaQuery, criteriaBuilder) -> {
                                 root.fetch("cityTo");
                                 root.fetch("cityFrom");
+                                root.fetch("planeType");
                                 return null;
                             }));
-            System.out.println(flightEntities);
             for (FlightEntity flightEntity : flightEntities) {
+                Date date2 = flightEntity.getDateTimeArr();
+                Long time = date2.getTime() + 3600000;
+                date2.setTime(time);
+
                 List<FlightEntity> flightEntities1 = flightRepository
                         .findAll(SpecificationUtils
                                 .byCityFrom_City(flightEntity.getCityTo().getCity())
-                                .and(SpecificationUtils.byDateTimeDepGreaterThanEqual(flightEntity.getDateTimeArr()))
-                                .and(SpecificationUtils.byDateTimeDepLessThanEqual(date))
+                                .and(SpecificationUtils.byDateTimeDepGreaterThanEqual(date2))
+                                .and(SpecificationUtils.bySameAirport(flightEntity.getAirportTo()))
+                                .and(SpecificationUtils.byDateTimeDepLessThanEqual(date1))
                                 .and(SpecificationUtils.byCountOfPlacesGreaterThanEqual(searchForm.getCountOfPerson()))
                                 .and((root, criteriaQuery, criteriaBuilder) -> {
                                     root.fetch("cityTo");
@@ -199,22 +218,29 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
                                     return null;
                                 }));
                 for (FlightEntity entity : flightEntities1) {
+
                     if (entity.getCityTo().getCity().equals(searchForm.getCityTo())) {
-                        flights.add(new ArrayList<>());
-                        System.out.println(flights.size());
-                        flightEntity.setDateTimeDep(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightEntity.getDateTimeDep().toString()));
-                        flightEntity.setDateTimeArr(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightEntity.getDateTimeArr().toString()));
-                        flights.get(k).add(modelMapper.map(flightEntity, FlightDto.class));
-                        entity.setDateTimeArr(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(entity.getDateTimeArr().toString()));
-                        entity.setDateTimeDep(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(entity.getDateTimeDep().toString()));
-                        flights.get(k).add(modelMapper.map(entity, FlightDto.class));
+                        FlightsList flightsList = new FlightsList();
+                        flightsList.setFlights(new ArrayList<>());
+                        flights.add(flightsList);
+                        flights.get(k).getFlights().add(modelMapper.map(flightEntity, FlightDto.class));
+                        flights.get(k).setDistance(flights.get(k).getDistance() + flightEntity.getDistance());
+                        flights.get(k).setPrice(flights.get(k).getPrice() + flightEntity.getPrice());
+                        flights.get(k).getFlights().add(modelMapper.map(entity, FlightDto.class));
+                        flights.get(k).setDistance(flights.get(k).getDistance() + entity.getDistance());
+                        flights.get(k).setPrice(flights.get(k).getPrice() + entity.getPrice());
+                        flights.get(k).setTime(entity.getDateTimeArr().getTime() - flightEntity.getDateTimeDep().getTime());
                         k++;
                     } else {
+                        date2 = entity.getDateTimeArr();
+                        time = date2.getTime() + 3600000;
+                        date2.setTime(time);
                         List<FlightEntity> flightEntities2 = flightRepository
                                 .findAll(SpecificationUtils
                                         .byCityFrom_City(entity.getCityTo().getCity())
-                                        .and(SpecificationUtils.byDateTimeDepGreaterThanEqual(entity.getDateTimeArr()))
-                                        .and(SpecificationUtils.byDateTimeDepLessThanEqual(date))
+                                        .and(SpecificationUtils.byDateTimeDepGreaterThanEqual(date2))
+                                        .and(SpecificationUtils.bySameAirport(entity.getAirportTo()))
+                                        .and(SpecificationUtils.byDateTimeDepLessThanEqual(date1))
                                         .and(SpecificationUtils.byCountOfPlacesGreaterThanEqual(searchForm.getCountOfPerson()))
                                         .and((root, criteriaQuery, criteriaBuilder) -> {
                                             root.fetch("cityTo");
@@ -223,16 +249,21 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
                                         }));
                         for (FlightEntity entity2 : flightEntities2) {
                             if (entity2.getCityTo().getCity().equals(searchForm.getCityTo())) {
-                                flights.add(new ArrayList<>());
-                                flightEntity.setDateTimeArr(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightEntity.getDateTimeArr().toString()));
-                                flightEntity.setDateTimeDep(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightEntity.getDateTimeDep().toString()));
-                                flights.get(k).add(modelMapper.map(flightEntity, FlightDto.class));
-                                entity.setDateTimeArr(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(entity.getDateTimeArr().toString()));
-                                entity.setDateTimeDep(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(entity.getDateTimeDep().toString()));
-                                flights.get(k).add(modelMapper.map(entity, FlightDto.class));
-                                entity2.setDateTimeArr(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(entity.getDateTimeArr().toString()));
-                                entity2.setDateTimeDep(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(entity2.getDateTimeDep().toString()));
-                                flights.get(k).add(modelMapper.map(entity2, FlightDto.class));
+                                FlightsList flightsList = new FlightsList();
+                                flightsList.setFlights(new ArrayList<>());
+                                flights.add(flightsList);
+                                flights.get(k).getFlights().add(modelMapper.map(flightEntity, FlightDto.class));
+                                flights.get(k).setDistance(flights.get(k).getDistance() + flightEntity.getDistance());
+                                flights.get(k).setPrice(flights.get(k).getPrice() + flightEntity.getPrice());
+                                flights.get(k).getFlights().add(modelMapper.map(entity, FlightDto.class));
+                                flights.get(k).setDistance(flights.get(k).getDistance() + entity.getDistance());
+                                flights.get(k).setPrice(flights.get(k).getPrice() + entity.getPrice());
+
+                                flights.get(k).getFlights().add(modelMapper.map(entity2, FlightDto.class));
+                                flights.get(k).setDistance(flights.get(k).getDistance() + entity2.getDistance());
+                                flights.get(k).setPrice(flights.get(k).getPrice() + entity2.getPrice());
+                                flights.get(k).setTime(entity2.getDateTimeArr().getTime() - flightEntity.getDateTimeDep().getTime());
+
                                 k++;
                             }
                         }
@@ -243,23 +274,54 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        System.out.println(flights);
         return flights;
+    }
+
+    @Override
+    public Page<FlightDto> findByCity(String city, Pageable pageable) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar c = Calendar.getInstance();
+            Date now = new Date();
+            c.setTime(now);
+            c.add(Calendar.DATE, 2);
+            String dateStr = sdf.format(c.getTime());
+            Date date1 = null;
+            date1 = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+
+
+            return flightRepository.findAll(SpecificationUtils.byCityFrom_City(city)
+                    .and(SpecificationUtils.byDateTimeDepGreaterThanEqual(now))
+                    .and(SpecificationUtils.byDateTimeDepLessThanEqual(date1))
+                    .and(((root, criteriaQuery, criteriaBuilder) -> {
+                        if (criteriaQuery.getResultType().equals(Long.class)) {
+                            return null;
+                        } else {
+                            root.fetch("cityTo");
+                            root.fetch("cityFrom");
+                            root.fetch("planeType");
+                            return null;
+                        }
+                    })), pageable).map(flightEntity -> modelMapper.map(flightEntity, FlightDto.class));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static class SpecificationUtils {
 
-        public static Specification<FlightEntity> byPassengerId(Long id) {
-            return ((root, criteriaQuery, criteriaBuilder) -> {
-                return criteriaBuilder.equal(root.get("passenger"), id);
-            });
+        public static Specification<FlightEntity> byId(Long id) {
+            return (root, criteriaQuery, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("id"), id);
         }
+
 
         public static Specification<FlightEntity> byCityFrom_City(String city) {
             return new Specification<FlightEntity>() {
                 @Override
                 public Predicate toPredicate(Root<FlightEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                    Join<FlightEntity, CityEntity> cityEntityListJoin = root.join("cityFrom");
+                    Join<FlightEntity, CityEntity> cityEntityListJoin = root.join("cityFrom", JoinType.LEFT);
                     Predicate predicate = criteriaBuilder.equal(cityEntityListJoin.get("city"), city);
                     return predicate;
                 }
@@ -270,24 +332,25 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
             return new Specification<FlightEntity>() {
                 @Override
                 public Predicate toPredicate(Root<FlightEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                    Join<FlightEntity, CityEntity> cityEntityListJoin = root.join("cityTo");
+                    Join<FlightEntity, CityEntity> cityEntityListJoin = root.join("cityTo", JoinType.LEFT);
                     Predicate predicate = criteriaBuilder.equal(cityEntityListJoin.get("city"), city);
                     return predicate;
                 }
             };
         }
 
-        public static Specification<FlightEntity> byId(Long id) {
-            return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("id"), id);
-        }
-
 
         public static Specification<FlightEntity> byDateTimeDepGreaterThanEqual(Date date) {
-            return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("dateTimeDep"), date);
+            return (root, criteriaQuery, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("dateTimeDep"), date);
         }
 
         public static Specification<FlightEntity> byDateTimeDepLessThanEqual(Date date) {
             return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("dateTimeDep"), date);
+        }
+
+        public static Specification<FlightEntity> bySameAirport(String airport) {
+            return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("airportFrom"), airport);
         }
 
         public static Specification<FlightEntity> byCountOfPlacesGreaterThanEqual(int countOfPlaces) {

@@ -1,5 +1,5 @@
 <#ftl encoding="UTF-8"/>
-<#import "header.ftlh" as base>
+<#import "header.ftl" as base>
 <#import  "spring.ftl" as spring/>
 
 <@base.main>
@@ -65,11 +65,12 @@
                                        class="form-control ${(passwordError??)?string('is-invalid','')}"
                                        id="password"
                                        placeholder="Password">
-                                <#if passwordsErrorMessage??>
-                                    <p class="text-danger">
-                                        ${passwordsErrorMessage}
-                                    </p>
-                                </#if>
+                                <label for="password"
+                                       style="color: #d33682;width: 100%;margin-top: 0.25rem;font-size: 80%;">
+                                    <#if passwordMatchError??>
+                                        ${passwordMatchError}
+                                    </#if>
+                                </label>
                                 <#if passwordError??>
                                     <div class="invalid-feedback">
                                         ${passwordError}
@@ -89,13 +90,13 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="password2">Confirm Password</label>
-                                <input type="password" name="password2"
-                                       class="form-control ${(password2Error??)?string('is-invalid','')}"
-                                       id="password2"
+                                <input type="password" name="confirmPassword"
+                                       class="form-control ${(confirmPasswordError??)?string('is-invalid','')}"
+                                       id="confirmPassword"
                                        placeholder="Password">
-                                <#if password2Error??>
+                                <#if confirmPasswordError??>
                                     <div class="invalid-feedback">
-                                        ${password2Error}
+                                        ${confirmPasswordError}
                                     </div>
                                 </#if>
                             </div>

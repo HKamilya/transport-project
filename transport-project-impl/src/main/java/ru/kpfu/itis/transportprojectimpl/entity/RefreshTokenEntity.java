@@ -1,5 +1,6 @@
 package ru.kpfu.itis.transportprojectimpl.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;

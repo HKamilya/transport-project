@@ -1,77 +1,65 @@
 package ru.kpfu.itis.transportprojectweb.security.jwt;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import io.jsonwebtoken.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import ru.kpfu.itis.transportprojectweb.security.details.UserDetailsImpl;
-import ru.kpfu.itis.transportprojectweb.security.details.UserDetailsServiceImpl;
 
-import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtProvider {
+    @Autowired
+    @Qualifier("customUserDetailService")
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-    private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
+    private JwtProperties jwtProperties;
 
-    @Value("${jwt.token.secret}")
-    private String jwtSecret;
-
-    @Value("${jwt.token.expired}")
-    private int jwtExpirationMs;
-
-    public String generateJwtToken(UserDetailsImpl userPrincipal) {
-        return generateTokenFromUsername(userPrincipal.getUsername());
-    }
-
-    public String generateTokenFromUsername(String username) {
-        return Jwts.builder().setSubject(username).setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS256, jwtSecret)
+    public String generateToken(String login, String role) {
+        Date date = Date.from(Instant.now().plusMillis(jwtProperties.getValidity()));
+        Claims claims = Jwts.claims().setSubject(login);
+        claims.put("role", String.valueOf(role));
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(login)
+                .setIssuedAt(new Date())
+                .setExpiration(date)
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
     }
 
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException expEx) {
+            throw new TokenExpiredException("Token expired");
+        } catch (UnsupportedJwtException unsEx) {
+            throw new UnsupportedJwtException("Unsupported jwt");
+        } catch (MalformedJwtException mjEx) {
+            throw new MalformedJwtException("Malformed jwt");
+        } catch (SignatureException sEx) {
+            throw new SignatureException("Invalid signature");
+        } catch (Exception e) {
+            throw new TokenExpiredException("invalid token");
+        }
+    }
+
+    public String getLoginFromToken(String token) {
+        return Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token).getBody().getSubject();
+    }
+
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUserNameFromJwtToken(token));
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getLoginFromToken(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
-
-    public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public boolean validateJwtToken(String authToken) {
-        try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
-            return true;
-        } catch (SignatureException e) {
-            logger.error("Invalid JWT signature: {}", e.getMessage());
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
-        } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            logger.error("JWT token is unsupported: {}", e.getMessage());
-        } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty: {}", e.getMessage());
-        }
-
-        return false;
-    }
-
-    public String resolveToken(HttpServletRequest req) {
-        String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
-    }
-
 }

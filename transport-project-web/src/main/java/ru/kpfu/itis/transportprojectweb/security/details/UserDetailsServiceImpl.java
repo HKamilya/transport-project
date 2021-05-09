@@ -20,6 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDto userEntity = (UserDto) userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        System.out.println(userEntity);
         return new UserDetailsImpl(userEntity);
     }
 }

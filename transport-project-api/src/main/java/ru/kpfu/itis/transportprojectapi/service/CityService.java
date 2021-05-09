@@ -11,5 +11,9 @@ public interface CityService<CityDto, Long> {
 
     public List<CityDto> findAll();
 
+    List<String> findAllCities();
+
     public Optional<CityDto> findByName(String name);
+
+    CityDto save(CityDto cityDto);
 }

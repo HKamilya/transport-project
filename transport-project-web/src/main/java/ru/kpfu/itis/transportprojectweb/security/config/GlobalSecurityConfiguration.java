@@ -16,9 +16,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
 import ru.kpfu.itis.transportprojectweb.security.jwt.JwtFilter;
 import ru.kpfu.itis.transportprojectweb.security.oauth.CustomOAuth2UserService;
 import ru.kpfu.itis.transportprojectweb.security.oauth.OAuth2LoginSuccessHandler;
@@ -39,7 +41,6 @@ public class GlobalSecurityConfiguration {
         @Autowired
         private JwtFilter jwtFilter;
 
-
         @Bean
         @Override
         public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -48,14 +49,14 @@ public class GlobalSecurityConfiguration {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.csrf().disable();
-
-            http.formLogin().disable();
-            http.httpBasic().disable()
+            http.csrf().disable()
+                    .formLogin().disable()
+                    .httpBasic().disable()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .authorizeRequests()
                     .antMatchers("/api/flights").permitAll()
+                    .antMatchers("/api/cities/**").permitAll()
                     .antMatchers("/api/auth/login").permitAll()
                     .antMatchers("/api/auth/refreshToken").permitAll()
                     .antMatchers("/api/reservations/**").authenticated()
@@ -65,7 +66,9 @@ public class GlobalSecurityConfiguration {
                     .anyRequest().authenticated()
                     .and()
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         }
+
     }
 
     @Order(1)
@@ -91,13 +94,14 @@ public class GlobalSecurityConfiguration {
                     .antMatchers("/search").permitAll()
                     .antMatchers("/admin").permitAll()
                     .antMatchers("/flights").permitAll()
-                    .antMatchers("/admin/addAdmin").hasAuthority("ADMIN")
-                    .antMatchers("/admin/adminProfile").hasAuthority("ADMIN")
-                    .antMatchers("/admin/addFlight").hasAuthority("ADMIN")
-                    .antMatchers("/admin/addAdmin").hasAuthority("ADMIN")
-                    .antMatchers("/admin/flights").hasAuthority("ADMIN")
-                    .antMatchers("/admin/admins").hasAuthority("ADMIN")
+                    .antMatchers("/admin/addAdmin").hasAuthority("ROLE_ADMIN")
+                    .antMatchers("/admin/adminProfile").hasAuthority("ROLE_ADMIN")
+                    .antMatchers("/admin/addFlight").hasAuthority("ROLE_ADMIN")
+                    .antMatchers("/admin/addAdmin").hasAuthority("ROLE_ADMIN")
+                    .antMatchers("/admin/flights/**").hasAuthority("ROLE_ADMIN")
+                    .antMatchers("/admin/admins").hasAuthority("ROLE_ADMIN")
                     .antMatchers("/oauth2/**").permitAll()
+                    .antMatchers("/schedule/**").permitAll()
                     .and()
                     .formLogin()
                     .loginPage("/signIn")
@@ -106,9 +110,11 @@ public class GlobalSecurityConfiguration {
                     .successHandler(new AuthenticationSuccessHandler() {
                         @Override
                         public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-                            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+                            System.out.println(authentication.getAuthorities());
+                            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                                 httpServletResponse.sendRedirect("/admin/adminProfile");
-                            } else {
+                            }
+                            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
                                 httpServletResponse.sendRedirect("/profile");
                             }
                         }

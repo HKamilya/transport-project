@@ -40,7 +40,8 @@ public class UserEntity {
         LOCAL, GOOGLE
     }
 
-    @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "passenger", fetch = FetchType.EAGER)
+    @ToString.Exclude
     public List<ReservationEntity> reservations;
 
     public Boolean isAdmin() {

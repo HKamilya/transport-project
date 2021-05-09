@@ -11,7 +11,7 @@ public class FlightDto {
     private CityDto cityTo;
 
     private CityDto cityFrom;
-    private String planeType;
+    private PlaneDto planeType;
     private String airportFrom;
     private String airportTo;
     private String dateTimeDep;

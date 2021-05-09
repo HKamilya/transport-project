@@ -11,4 +11,5 @@ public class SearchForm {
     private String cityTo;
     private String date;
     private int countOfPerson;
+    private int sort;
 }

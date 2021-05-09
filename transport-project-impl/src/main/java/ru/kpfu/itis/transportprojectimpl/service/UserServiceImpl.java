@@ -7,11 +7,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kpfu.itis.transportprojectapi.dto.UserDto;
 import ru.kpfu.itis.transportprojectapi.service.UserService;
-import ru.kpfu.itis.transportprojectimpl.annotation.LogExecutionTime;
-import ru.kpfu.itis.transportprojectimpl.entity.ReservationEntity;
+import ru.kpfu.itis.transportprojectimpl.aspect.Cacheable;
+import ru.kpfu.itis.transportprojectimpl.aspect.LogTime;
 import ru.kpfu.itis.transportprojectimpl.entity.UserEntity;
 import ru.kpfu.itis.transportprojectimpl.repository.UserRepository;
 
+
+import javax.persistence.criteria.JoinType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +30,7 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    @LogExecutionTime
+    @LogTime
     public void signUp(UserDto userDto) {
 
         Date date1 = null;
@@ -48,39 +50,57 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
     }
 
     @Override
-    @LogExecutionTime
+    @LogTime
     public void save(UserDto userDto) {
-        userRepository.save(modelMapper.map(userDto, UserEntity.class));
+        Date date1 = null;
+        try {
+            date1 = new SimpleDateFormat("yyyy-MM-dd").parse(userDto.getDateOfBirth());
+            UserEntity user = new UserEntity();
+            modelMapper.map(userDto, user);
+            user.setDateOfBirth(date1);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            userRepository.save(user);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    @LogExecutionTime
-    public UserDto findByEmail(String email) {
-        Optional<UserEntity> optionalUser = userRepository.findOne(SpecificationUtils.byEmail(email)
-                .and((root, criteriaQuery, criteriaBuilder) -> {
-                    root.fetch("reservations").fetch("flight").fetch("cityTo").getParent().fetch("cityFrom");
-                    return null;
-                }));
-        return optionalUser.map(userEntity -> modelMapper.map(userEntity, UserDto.class)).orElse(null);
+    @LogTime
+    @Cacheable
+    public Optional<UserDto> findByEmail(String email) {
+        Optional<UserEntity> optionalUser =
+                userRepository.findOne(SpecificationUtils.byEmail(email)
+                        .and((root, criteriaQuery, criteriaBuilder) -> {
+                            root.fetch("reservations", JoinType.LEFT).fetch("flight", JoinType.LEFT).fetch("cityTo", JoinType.LEFT).getParent().fetch("cityFrom", JoinType.LEFT).getParent().fetch("planeType", JoinType.LEFT);
+                            return null;
+                        }));
+        System.out.println(optionalUser);
+        return optionalUser.map(userEntity -> modelMapper.map(userEntity, UserDto.class));
     }
 
     @Override
-    @LogExecutionTime
+    @LogTime
     public void signUpAfterOAuth(String email, String name, String lastname, String provider) {
         UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setFirstname(name);
         user.setLastname(lastname);
+        user.setUsername(email);
         user.setRole(UserEntity.Role.USER);
         user.setAuth_provider(UserEntity.AuthProvider.GOOGLE);
         userRepository.save(user);
     }
 
     @Override
-    @LogExecutionTime
+    @LogTime
     public void updateUserAfterOAuth(UserDto userDto, String name, String provider) {
         UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
+        userEntity.setId(userDto.getId());
+        System.out.println(userEntity.getId());
         if (provider.equals(UserEntity.AuthProvider.GOOGLE.toString())) {
+            userEntity.setUsername(userDto.getEmail());
             userEntity.setAuth_provider(UserEntity.AuthProvider.GOOGLE);
         } else {
             userEntity.setAuth_provider(UserEntity.AuthProvider.LOCAL);
@@ -90,28 +110,32 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
     }
 
     @Override
-    @LogExecutionTime
+    @LogTime
+    @Cacheable
     public UserDto findByEmailOrUsername(String email) {
-        Optional<UserEntity> optionalUser = userRepository.findByEmailOrUsername(email, email);
         Optional<UserEntity> optionalUser2 = userRepository.findOne(SpecificationUtils.byEmail(email)
                 .or(SpecificationUtils.byUsername(email))
                 .and((root, criteriaQuery, criteriaBuilder) -> {
-                    root.fetch("reservations").fetch("flight").fetch("cityTo").getParent().fetch("cityFrom");
+                    root.fetch("reservations", JoinType.LEFT).fetch("flight", JoinType.LEFT).fetch("cityTo", JoinType.LEFT).getParent().fetch("cityFrom", JoinType.LEFT).getParent().fetch("planeType", JoinType.LEFT);
                     return null;
                 }));
-        return optionalUser.map(userEntity -> modelMapper.map(userEntity, UserDto.class)).orElse(null);
+        return optionalUser2.map(userEntity -> modelMapper.map(userEntity, UserDto.class)).orElse(null);
 
     }
 
     @Override
     public Optional<UserDto> findByUsername(String username) {
         Optional<UserEntity> optionalUser2 = userRepository.findOne(SpecificationUtils.byUsername(username)
-                .or(SpecificationUtils.byUsername(username))
                 .and((root, criteriaQuery, criteriaBuilder) -> {
-                    root.fetch("reservations").fetch("flight").fetch("cityTo").getParent().fetch("cityFrom");
+                    root.fetch("reservations", JoinType.LEFT).fetch("flight", JoinType.LEFT).fetch("cityTo", JoinType.LEFT).getParent().fetch("cityFrom", JoinType.LEFT).getParent().fetch("planeType", JoinType.LEFT);
                     return null;
                 }));
         return Optional.of(modelMapper.map(optionalUser2.get(), UserDto.class));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 
     public static class SpecificationUtils {

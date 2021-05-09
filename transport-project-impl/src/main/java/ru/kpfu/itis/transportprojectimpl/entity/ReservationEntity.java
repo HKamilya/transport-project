@@ -19,7 +19,6 @@ public class ReservationEntity {
     @ManyToOne
     public UserEntity passenger;
 
-
     private Integer countOfPlaces;
 
 

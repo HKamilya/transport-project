@@ -14,13 +14,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/flights")
-public class FlightController {
+public class FlightRestController {
     @Autowired
     private FlightService flightService;
 
     @PostMapping
-    @ResponseBody
     public FlightDto saveFlight(@RequestBody FlightForm form) {
+        System.out.println(form);
         return (FlightDto) flightService.save(form);
     }
 
@@ -30,8 +30,9 @@ public class FlightController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFlight(@PathVariable Long id) {
+    public ResponseEntity deleteFlight(@PathVariable Long id) {
         flightService.deleteById(id);
+        return ResponseEntity.ok("ok");
     }
 
     @GetMapping("/{id}")
@@ -40,8 +41,8 @@ public class FlightController {
         return flightDto.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
-    @PutMapping("/{id}l")
-    public void updateFlight(@PathVariable Long id, @RequestBody FlightForm flightDto) {
-        flightService.save(flightDto);
+    @PutMapping("")
+    public FlightDto updateFlight(@RequestBody FlightForm flightForm) {
+        return (FlightDto) flightService.save(flightForm);
     }
 }
