@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "jwt.token.expired",
+      "type": "java.lang.String",
+      "description": "Description for jwt.token.expired."
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Description for jwt.secret."
+    }
+  ] }
