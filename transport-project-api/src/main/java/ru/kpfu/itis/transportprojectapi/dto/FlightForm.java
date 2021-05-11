@@ -15,7 +15,6 @@ public class FlightForm {
     private String airportTo;
     private Long planeType;
     private String dateTimeDep;
-    private String dateTimeArr;
     private String state;
     private int price;
 }

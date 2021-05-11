@@ -4,27 +4,22 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.GeocodingApiRequest;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.LatLng;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+@Component
 public class JsonReader {
-    @Value("${google.maps.key}")
-    private String key;
+
 
     private static String readAll(final Reader rd) throws IOException {
         final StringBuilder sb = new StringBuilder();
@@ -70,7 +65,7 @@ public class JsonReader {
     public double[] main(String city, String country) throws IOException, JSONException, InterruptedException, ApiException {
         final String baseUrl = "https://maps.googleapis.com/maps/api/geocode/json";// путь к Geocoding API по HTTP
         final Map<String, String> params = Maps.newHashMap();
-        params.put("key", key);// исходит ли запрос на геокодирование от устройства с датчиком местоположения
+        params.put("key", "");// исходит ли запрос на геокодирование от устройства с датчиком местоположения
         params.put("address", city + ", " + country);// адрес, который нужно геокодировать
         final String url = baseUrl + '?' + encodeParams(params);// генерируем путь с параметрами
         System.out.println(url);// Путь, что бы можно было посмотреть в браузере ответ службы

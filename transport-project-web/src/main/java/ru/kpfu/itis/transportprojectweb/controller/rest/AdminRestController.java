@@ -1,6 +1,8 @@
 package ru.kpfu.itis.transportprojectweb.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.transportprojectapi.dto.UserDto;
 import ru.kpfu.itis.transportprojectapi.service.AdminService;
@@ -12,15 +14,15 @@ public class AdminRestController {
     private AdminService adminService;
 
     @PostMapping
-    public String postAdmins(@RequestBody UserDto userForm) {
+    public ResponseEntity<?> postAdmins(@RequestBody UserDto userForm) {
         adminService.addNewAdmin(userForm);
-        return "success";
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("{id}")
-    public String deleteAdmin(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteAdmin(@PathVariable("id") Long id) {
         adminService.deleteAdminOrUser(id);
-        return "success";
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

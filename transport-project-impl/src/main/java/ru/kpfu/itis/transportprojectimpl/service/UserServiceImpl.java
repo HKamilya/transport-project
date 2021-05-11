@@ -127,7 +127,11 @@ public class UserServiceImpl implements UserService<UserDto, Long> {
     public Optional<UserDto> findByUsername(String username) {
         Optional<UserEntity> optionalUser2 = userRepository.findOne(SpecificationUtils.byUsername(username)
                 .and((root, criteriaQuery, criteriaBuilder) -> {
-                    root.fetch("reservations", JoinType.LEFT).fetch("flight", JoinType.LEFT).fetch("cityTo", JoinType.LEFT).getParent().fetch("cityFrom", JoinType.LEFT).getParent().fetch("planeType", JoinType.LEFT);
+                    root.fetch("reservations", JoinType.LEFT)
+                            .fetch("flight", JoinType.LEFT)
+                            .fetch("cityTo", JoinType.LEFT).getParent()
+                            .fetch("cityFrom", JoinType.LEFT).getParent()
+                            .fetch("planeType", JoinType.LEFT);
                     return null;
                 }));
         return Optional.of(modelMapper.map(optionalUser2.get(), UserDto.class));

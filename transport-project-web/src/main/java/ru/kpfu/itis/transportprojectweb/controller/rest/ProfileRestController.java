@@ -1,6 +1,8 @@
 package ru.kpfu.itis.transportprojectweb.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.transportprojectapi.dto.UserDto;
@@ -26,9 +28,9 @@ public class ProfileRestController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUserById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteUserById(@PathVariable("id") Long id) {
         userService.deleteById(id);
-        return "success";
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 //    @PutMapping

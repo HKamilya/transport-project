@@ -31,14 +31,17 @@ public class SearchController {
 
     @GetMapping("")
     public String getSearchPage(@AuthenticationPrincipal UserDetails userDetails, Model model) throws JsonProcessingException {
-
+        String role = "";
         if (userDetails != null) {
+            role = userDetails.getAuthorities().stream().findFirst().toString();
+            if (role.contains("ADMIN")) {
+                role = "admin";
+            }
             model.addAttribute("username", userDetails.getUsername());
-            if (userDetails.getAuthorities().stream().findFirst().toString().equals("ADMIN"))
-                model.addAttribute("role", "admin");
         }
         List<String> cities = cityService.findAllCities();
         ObjectMapper objectMapper = new ObjectMapper();
+        model.addAttribute("role", role);
 
 
         String json = objectMapper.writeValueAsString(cities);

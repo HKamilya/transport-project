@@ -1,26 +1,14 @@
 package ru.kpfu.itis.transportprojectweb.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.kpfu.itis.transportprojectapi.dto.CityDto;
-import ru.kpfu.itis.transportprojectapi.dto.FlightDto;
-import ru.kpfu.itis.transportprojectapi.dto.FlightForm;
 import ru.kpfu.itis.transportprojectapi.dto.UserDto;
 import ru.kpfu.itis.transportprojectapi.service.AdminService;
-import ru.kpfu.itis.transportprojectapi.service.CityService;
-import ru.kpfu.itis.transportprojectapi.service.FlightService;
 import ru.kpfu.itis.transportprojectapi.service.UserService;
-import ru.kpfu.itis.transportprojectimpl.UserForm;
 import ru.kpfu.itis.transportprojectweb.security.details.UserDetailsImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 public class AdminProfileController {

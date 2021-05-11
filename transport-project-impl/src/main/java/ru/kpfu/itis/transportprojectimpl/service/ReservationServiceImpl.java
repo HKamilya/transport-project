@@ -102,7 +102,19 @@ public class ReservationServiceImpl implements ReservationService<ReservationDto
 
     @Override
     public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+        Optional<ReservationEntity> reservationEntity = reservationRepository
+                .findOne(SpecificationUtils.byId(id)
+                        .and((root, criteriaQuery, criteriaBuilder) -> {
+                            root.fetch("flight").fetch("cityTo").getParent().fetch("cityFrom").getParent().fetch("planeType");
+                            root.fetch("passenger");
+                            return null;
+                        }));
+        if (reservationEntity.isPresent()) {
+            FlightEntity flightEntity = reservationEntity.get().getFlight();
+            flightEntity.setCountOfPlaces(flightEntity.getCountOfPlaces() + reservationEntity.get().getCountOfPlaces());
+            flightService.save(modelMapper.map(flightEntity, FlightDto.class));
+            reservationRepository.deleteById(id);
+        }
     }
 
     public static class SpecificationUtils {

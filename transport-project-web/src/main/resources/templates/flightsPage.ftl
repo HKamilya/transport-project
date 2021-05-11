@@ -83,7 +83,7 @@
                 '                                <div class="col-3">\n' +
                 '                                    <p>' + flight['cityTo']['city'] + '</p>\n' +
                 '                                </div>\n' +
-                '                                <div class="col-3">\n' +
+                '                                <div class="col-4">\n' +
                 '                                    <p>' + flight['airportTo'] + '</p>\n' +
                 '                                </div>\n' +
                 '                                <div class="col-3">\n' +
@@ -199,6 +199,9 @@
                                 <div class="col-3">
                                     <p>${flight.dateTimeDep}</p>
                                 </div>
+                                <div class="col-1">
+                                    ${flight.state}
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-1">
@@ -211,6 +214,9 @@
                                 </div>
                                 <div class="col-3">
                                     <p>${flight.dateTimeArr}</p>
+                                </div>
+                                <div class="col-1">
+
                                 </div>
                             </div>
                             <p>

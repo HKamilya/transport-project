@@ -1,4 +1,4 @@
-package ru.kpfu.itis.transportprojectimpl;
+package ru.kpfu.itis.transportprojectimpl.form;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.kpfu.itis.transportprojectimpl.validation.PasswordMatch;
 import ru.kpfu.itis.transportprojectimpl.validation.UniqueEmail;
+import ru.kpfu.itis.transportprojectimpl.validation.UniqueUsername;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -32,6 +33,7 @@ public class UserForm {
     @NotBlank(message = "password confirmation cannot be empty")
     private String confirmPassword;
     @NotBlank(message = "username cannot be empty")
+    @UniqueUsername
     private String username;
     private String phoneNumber;
     private String dateOfBirth;

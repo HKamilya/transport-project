@@ -37,6 +37,8 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
     private CityService cityService;
     @Autowired
     private PlaneService planeService;
+    @Autowired
+    private JsonReader jsonReader;
 
 
     @Override
@@ -50,7 +52,6 @@ public class FlightServiceImpl implements FlightService<FlightDto, Long> {
         PlaneDto planeDto = planeService.findById(form.getPlaneType());
         Date dateTimeDep = null;
         Date dateArr = null;
-        JsonReader jsonReader = new JsonReader();
         try {
             double[] to = jsonReader.main(form.getCityTo(), form.getCountryTo());
             double[] from = jsonReader.main(form.getCityFrom(), form.getCountryFrom());

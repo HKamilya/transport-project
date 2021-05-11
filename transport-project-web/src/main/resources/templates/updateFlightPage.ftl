@@ -28,6 +28,7 @@
 
         function sendFlight() {
             var data_json = {
+                id: document.getElementById('id').value,
                 countryTo: document.getElementById('countryTo').value,
                 cityTo: document.getElementById('cityTo').value,
                 airportTo: document.getElementById('airportTo').value,
@@ -56,9 +57,11 @@
                 <div class="jumbotron">
                     <form method="post" action="/admin/flights/update/${flight.id}">
                         <div class="col-4">
+                            <input type="hidden" name="id" id="id" value="${flight.id}">
                             <div class="form-group">
                                 <label class="col-form-label" for="countryFrom">Country from:</label>
-                                <input type="text" class="form-control" value="${flight.cityFrom.country}"
+                                <input type="text" class="form-control" id="countryFrom"
+                                       value="${flight.cityFrom.country}"
                                        name="countryFrom">
                             </div>
                             <div class="form-group">
@@ -68,7 +71,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="airportFrom">Airport from:</label>
-                                <input type="text" class="form-control" value="${flight.airportFrom}"
+                                <input type="text" class="form-control" id="airportFrom" value="${flight.airportFrom}"
                                        name="airportFrom">
                             </div>
                             <div class="form-group">
@@ -81,7 +84,8 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="countOfPlaces">Count of passengers:</label>
-                                <input type="number" class="form-control" value="${flight.countOfPlaces}"
+                                <input type="number" class="form-control" id="countOfPlaces"
+                                       value="${flight.countOfPlaces}"
                                        name="countOfPlaces">
                             </div>
                         </div>
@@ -89,28 +93,29 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="col-form-label" for="countryTo">Country to:</label>
-                                <input type="text" class="form-control" value="${flight.cityTo.country}"
+                                <input type="text" class="form-control" id="countryTo" value="${flight.cityTo.country}"
                                        name="countryTo">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="cityTo">City to:</label>
-                                <input type="text" id="cityTo" class="form-control" value="${flight.cityTo.city}"
+                                <input type="text" id="cityTo" class="form-control"
+                                       value="${flight.cityTo.city}"
                                        name="cityTo">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="airportTo">Airport to:</label>
-                                <input type="text" class="form-control" value="${flight.airportTo}"
+                                <input type="text" class="form-control" id="airportTo" value="${flight.airportTo}"
                                        name="airportTo">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="dateTimeDep">Departure date:</label>
-                                <input type="text" class="form-control" value="${flight.dateTimeDep}"
+                                <input type="text" class="form-control" id="dateTimeDep" value="${flight.dateTimeDep}"
                                        name="dateTimeDep">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label" for="price">Price:</label>
                                 <input type="text" class="form-control" value="${price}" name="price"
-                                       id="priceInput">
+                                       id="price">
                             </div>
                             <div class="form-group">
                                 <select class="custom-select" name="state" id="state">
@@ -118,7 +123,7 @@
                                     <option value="CANCELED">CANCELED</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-outline-success">update</button>
+                            <button type="button" class="btn btn-outline-success" onclick="sendFlight()">update</button>
                         </div>
                     </form>
                 </div>

@@ -19,9 +19,9 @@ public class FlightRestController {
     private FlightService flightService;
 
     @PostMapping
-    public FlightDto saveFlight(@RequestBody FlightForm form) {
+    public ResponseEntity<?> saveFlight(@RequestBody FlightForm form) {
         System.out.println(form);
-        return (FlightDto) flightService.save(form);
+        return ResponseEntity.ok(flightService.save(form));
     }
 
     @GetMapping

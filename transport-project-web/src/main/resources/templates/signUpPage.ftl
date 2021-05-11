@@ -21,6 +21,11 @@
                                 <label for="exampleInputUsername">Username</label>
                                 <input type="text" name="username" class="form-control" id="exampleInputUsername"
                                        placeholder="Username" value="<#if userForm??>${userForm.username}</#if>">
+                                <#if usernameError??>
+                                    <div class="invalid-feedback">
+                                        ${usernameError}
+                                    </div>
+                                </#if>
                             </div>
                         </div>
                         <div class=" col-6">

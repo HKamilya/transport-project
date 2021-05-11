@@ -7,6 +7,8 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+        var city = ${city}
+        console.log(city)
         var stompClient = null;
         const handlers = []
 
@@ -22,41 +24,46 @@
         }
 
         function show(flight) {
-            var id = flight['id']
-            content = $(id).detach();
+            if (city === flight['cityFrom']['city']) {
+                $("#items").prepend($(' <div class="list-group-item" id="' + flight['id'] + '">\n' +
+                    '                            <div class="row">\n' +
+                    '                                <div class="col-1">\n' +
+                    '                                    <p>' + flight['id'] + '</p>\n' +
+                    '                                </div>\n' +
+                    '                                <div class="col-3">\n' +
+                    '                                    <p>' + flight['cityFrom']['city'] + '</p>\n' +
+                    '                                </div>\n' +
+                    '                                <div class="col-4">\n' +
+                    '                                    <p>' + flight['airportFrom'] + '</p>\n' +
+                    '                                </div>\n' +
+                    '                                <div class="col-3">\n' +
+                    '                                    <p>' + flight['dateTimeDep'] + '</p>\n' +
+                    '                                </div>\n' +
+                    ' <div class="col-1">\n' +
 
-            $("#items").prepend($(' <div class="list-group-item" id="' + flight['id'] + '">\n' +
-                '                            <div class="row">\n' +
-                '                                <div class="col-1">\n' +
-                '                                    <p>' + flight['id'] + '</p>\n' +
-                '                                </div>\n' +
-                '                                <div class="col-3">\n' +
-                '                                    <p>' + flight['cityFrom']['city'] + '</p>\n' +
-                '                                </div>\n' +
-                '                                <div class="col-4">\n' +
-                '                                    <p>' + flight['airportFrom'] + '</p>\n' +
-                '                                </div>\n' +
-                '                                <div class="col-3">\n' +
-                '                                    <p>' + flight['dateTimeDep'] + '</p>\n' +
-                '                                </div>\n' +
-                '                            </div>\n' +
-                '                            <div class="row">\n' +
-                '                                <div class="col-1">\n' +
-                '                                </div>\n' +
-                '                                <div class="col-3">\n' +
-                '                                    <p>' + flight['cityTo']['city'] + '</p>\n' +
-                '                                </div>\n' +
-                '                                <div class="col-3">\n' +
-                '                                    <p>' + flight['airportTo'] + '</p>\n' +
-                '                                </div>\n' +
-                '                                <div class="col-3">\n' +
-                '                                    <p>' + flight['dateTimeArr'] + '</p>\n' +
-                '                                </div>\n' +
-                '                            </div>\n' +
-                '                        </div>'
-            ))
-            ;
+                    ' </div>' +
+                    '                            </div>\n' +
+                    '                            <div class="row">\n' +
+                    '                                <div class="col-1">\n' +
+                    '                                </div>\n' +
+                    '                                <div class="col-3">\n' +
+                    '                                    <p>' + flight['cityTo']['city'] + '</p>\n' +
+                    '                                </div>\n' +
+                    '                                <div class="col-4">\n' +
+                    '                                    <p>' + flight['airportTo'] + '</p>\n' +
+                    '                                </div>\n' +
+                    '                                <div class="col-3">\n' +
+                    '                                    <p>' + flight['dateTimeArr'] + '</p>\n' +
+                    '                                </div>\n' +
+                    '<div class="col-1">\n' +
+                    ' <p>' + flight['state'] + '</p>\n' +
+                    '</div>' +
+                    '                            </div>\n' +
+                    '                        </div>'
+                ));
+            }
         }
+
 
         function disconnect() {
             if (stompClient !== null) {
@@ -75,6 +82,7 @@
                 <div class="list-group-item" id="${flight.id}">
                     <div class="row">
                         <div class="col-1">
+                            ${flight.id}
                         </div>
                         <div class="col-3">
                             <p>${flight.cityFrom.city}</p>

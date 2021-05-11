@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import ru.kpfu.itis.transportprojectimpl.UserForm;
+import ru.kpfu.itis.transportprojectimpl.form.UserForm;
 import ru.kpfu.itis.transportprojectapi.dto.UserDto;
 import ru.kpfu.itis.transportprojectapi.service.UserService;
 
@@ -16,7 +16,6 @@ import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
